@@ -7,6 +7,7 @@ const STORY = {
     title: {
       title: "Sky Runes - Chapter 1",
       html: [
+        '<div class="hero"><h1 class="logo-main">sky runes</h1><div class="logo-sub">（失われた風の欠片）</div></div>',
         "浮島〈スカイフィールド〉は祠のルーンで空に留まっている。",
         "だが〈勇気のルーン〉が欠け、島はゆっくりと不安定になりつつあった。",
         "見習い探索者のあなたは、祠『風の間』で欠片を回収する任務を受ける。",

@@ -66,3 +66,12 @@ main#game section { margin: 12px 0; padding: 12px; border: 1px solid var(--borde
   .crumbs { font-size: 11px; }
   #dialog { max-width: none; }
 }
+
+/* Hero Title */
+.hero { text-align: center; margin: 12px 0 16px; }
+.logo-main { font-family: 'Uncial Antiqua', serif; font-size: clamp(36px, 7vw, 64px); letter-spacing: .02em; line-height: 1.05; margin: 0; 
+  background: linear-gradient(180deg, #f8fafc, #c7d2fe 60%, #93c5fd);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+  text-shadow: 0 2px 0 rgba(0,0,0,.25), 0 8px 24px rgba(30,58,138,.35);
+}
+.logo-sub { margin-top: 4px; font-size: clamp(14px, 2.6vw, 18px); color: #c7d2fe; text-shadow: 0 1px 0 rgba(0,0,0,.35); }
