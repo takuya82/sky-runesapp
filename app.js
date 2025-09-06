@@ -190,6 +190,10 @@ function render(){
     b.onclick = () => { state.node = 'title'; state.hp = 5; save(); render(); };
     choices.appendChild(b);
   }
+
+  // focus first actionable button for accessibility
+  const firstBtn = choices.querySelector('button');
+  if (firstBtn) try { firstBtn.focus({ preventScroll: true }); } catch {}
 }
 
 function renderQuiz(n){
@@ -207,6 +211,30 @@ function renderQuiz(n){
     };
     choices.appendChild(b);
   });
+
+  // show number hints 1..n for keyboard users
+  const hint = document.createElement('div');
+  hint.className = 'muted';
+  hint.textContent = '数字キー 1-4 で選択';
+  choices.appendChild(hint);
 }
 
-window.addEventListener('DOMContentLoaded', render);
+// keyboard shortcuts for choices (1..9)
+window.addEventListener('keydown', (e)=>{
+  if (!/^[1-9]$/.test(e.key)) return;
+  const idx = Number(e.key) - 1;
+  const btns = Array.from(choices.querySelectorAll('button'));
+  if (btns[idx]) { e.preventDefault(); btns[idx].click(); }
+});
+
+window.addEventListener('DOMContentLoaded', () => {
+  // ARIA roles for dialog/status
+  try {
+    dialog.setAttribute('role','region');
+    dialog.setAttribute('aria-live','polite');
+    status.setAttribute('role','status');
+    status.setAttribute('aria-live','polite');
+    choices.setAttribute('role','group');
+  } catch {}
+  render();
+});
