@@ -1,0 +1,46 @@
+:root {
+  --bg: #0f172a;
+  --fg: #e5e7eb;
+  --muted: #94a3b8;
+  --card: #111827;
+  --accent: #6366f1;
+  --border: #1f2937;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; height: 100%; }
+body { background: var(--bg); color: var(--fg); font: 16px/1.6 system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Hiragino Kaku Gothic ProN", "Noto Sans JP", "Yu Gothic UI", "Meiryo", sans-serif; }
+
+.container { max-width: 960px; margin: 0 auto; padding: 16px; }
+header h1 { margin: 8px 0 0; font-size: 28px; }
+.sub { margin: 0; color: var(--muted); }
+
+.card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin: 16px 0; }
+.muted { color: var(--muted); font-size: 14px; }
+.foot { color: var(--muted); font-size: 12px; padding-bottom: 24px; }
+
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; }
+.tile { background: #0b1220; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+.tile img { display: block; width: 100%; height: 140px; object-fit: cover; }
+.tile .cap { padding: 8px; font-size: 13px; color: var(--muted); border-top: 1px solid var(--border); }
+
+ul { margin: 0.5rem 0 0; padding-left: 1.25rem; }
+li { margin: 0.25rem 0; }
+
+/* Buttons, labels */
+.btn { appearance: none; border: 1px solid var(--border); background: #111827; color: var(--fg); padding: 8px 12px; border-radius: 10px; cursor: pointer; }
+.btn:hover { filter: brightness(1.1); }
+.btn:active { transform: translateY(1px); }
+.btn-primary { background: var(--accent); border-color: var(--accent); color: white; }
+
+.label { display: inline-block; padding: 2px 8px; border-radius: 999px; border: 1px solid var(--border); font-size: 12px; }
+.label-ok { background: #064e3b; color: #d1fae5; border-color: #065f46; }
+.label-ng { background: #7f1d1d; color: #fee2e2; border-color: #991b1b; }
+
+.row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.space { height: 8px; }
+/* minimal UI for story layout */
+main#game { max-width: 720px; margin: 0 auto; }
+main#game section { margin: 12px 0; padding: 12px; border: 1px solid var(--border); border-radius: 10px; background: var(--card); }
+.badge { display: inline-block; padding: 2px 8px; border-radius: 999px; background: #0b1220; border: 1px solid var(--border); color: var(--fg); font-size: 12px; }
+#choices button { margin: 4px 8px 0 0; }
