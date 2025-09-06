@@ -125,6 +125,18 @@ function stepLabel(id){
   return 'End';
 }
 
+// Artwork mapping per node (optional)
+const ART = {
+  start: 'image/sky runes.jpg',
+  enemy1: 'image/stone-stair-snake_idle_v2.jpeg',
+  enemy2: 'image/stone-block-golem_idle_v2.jpeg',
+  fork: 'image/sky runes.jpg',
+  shrine: 'image/syujinkou.jpg',
+  boss: 'image/stone-block-golem_idle_v2.jpeg',
+  good_end: 'image/sky runes.jpg',
+  bad_end: 'image/sky runes.jpg',
+};
+
 function render(){
   const n = state.data.nodes[state.node];
   // header + progress
@@ -135,6 +147,20 @@ function render(){
     const labels = ['Start','Gate','Shrine','Boss','End'];
     const parts = labels.map((lb,i)=> i<cur?`<span class="crumb done">${lb}</span>`: i===cur?`<span class="crumb cur">${lb}</span>`:`<span class="crumb">${lb}</span>`);
     scene.insertAdjacentHTML('beforeend', `<div class="crumbs">${parts.join(' <span class="sep">→</span> ')}</div>`);
+    // scene artwork
+    const artSrc = ART[state.node] || null;
+    const old = scene.querySelector('.illust');
+    if (old) old.remove();
+    if (artSrc) {
+      const fig = document.createElement('figure');
+      fig.className = 'illust';
+      const img = document.createElement('img');
+      img.id = 'artimg';
+      img.alt = stepLabel(state.node);
+      img.src = artSrc;
+      fig.appendChild(img);
+      scene.appendChild(fig);
+    }
   }
 
   // body
