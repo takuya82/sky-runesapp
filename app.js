@@ -1,4 +1,4 @@
-// Sky Runes - Static Chapter Engine
+// Sky Runes - Static Chapter Engine (single-question per node)
 
 const STORY = {
   nodes: {
@@ -47,7 +47,7 @@ const STORY = {
       choices: [ { label: "戻る", to: "title" } ],
     },
 
-    // Main path
+    // Main path (single-question nodes)
     start: { title: "Skyfield", text: "浮島の祠へ向かう。道中に敵がいる。", choices: [
       { label: "北の道へ", to: "enemy1" }, { label: "東の谷へ", to: "enemy2" }
     ] },
@@ -57,10 +57,10 @@ const STORY = {
     enemy2: { title: "Slime B", text: "基礎文法クイズ。", type: "quiz",
       quiz: [ { q:"I ___ a student.", options:["am","is","are","be"], a:"am" }, { q:"She ___ tennis.", options:["plays","play","played（今）","to play"], a:"plays" } ],
       next: { ok:"fork", ng:"fork" } },
-    fork: { title: "Shrine Gate", text: "祠の入り口。ミニボス前に謎を解け（2/3正解で通過）。", choices: [
+    fork: { title: "Shrine Gate", text: "祠の入り口。ミニボス前に謎を解け。", choices: [
       { label: "祠に入る", to: "shrine" }, { label: "引き返す", to: "start" }
     ] },
-    shrine: { title: "Shrine Puzzle", text: "3問中2問正解で通過。失敗するとHP-1で再挑戦。", type: "quiz",
+    shrine: { title: "Shrine Puzzle", text: "正解で通過。失敗するとHP-1で再挑戦。", type: "quiz",
       quiz: [ { q:"because の意味は？", options:["なぜなら","しかし","それゆえ","それにもかかわらず"], a:"なぜなら" }, { q:"much の比較級は？", options:["more","most","many","more than"], a:"more" }, { q:"There ___ a pen on the desk.", options:["is","are","be","was"], a:"is" } ],
       next: { ok:"boss", ng:"shrine" } },
     boss: { title: "Mini Boss", text: "最後の一問！", type: "quiz",
@@ -76,7 +76,6 @@ const state = {
   hp: Number(localStorage.getItem('hp')) || 5,
   node: localStorage.getItem('node') || 'title',
   data: STORY,
-  trial: { node: null, asked: 0, correct: 0 },
 };
 
 const $ = (s) => document.querySelector(s);
@@ -86,9 +85,8 @@ function save(){ localStorage.setItem('hp', state.hp); localStorage.setItem('nod
 
 function render(){
   const n = state.data.nodes[state.node];
-  // header
+  // header + progress
   scene.innerHTML = `<span class="badge">Scene: ${n.title}</span>`;
-  // progress for gameplay nodes
   const flowNodes = ['start','enemy1','enemy2','fork','shrine','boss','good_end','bad_end'];
   if (flowNodes.includes(state.node)) {
     const idx = (id)=> id==='start'?0:id==='fork'?1:id==='shrine'?2:id==='boss'?3:4;
@@ -97,12 +95,10 @@ function render(){
     const parts = labels.map((lb,i)=> i<cur?`<span class="crumb done">${lb}</span>`: i===cur?`<span class="crumb cur">${lb}</span>`:`<span class="crumb">${lb}</span>`);
     scene.insertAdjacentHTML('beforeend', `<div class="crumbs">${parts.join(' <span class="sep">→</span> ')}</div>`);
   }
-
-  // body (html > text)
+  // body
   if (n && n.html) dialog.innerHTML = n.html; else dialog.textContent = n?.text || '';
   // status
   status.innerHTML = `<span class="badge">HP:${state.hp}</span>`;
-
   // choices
   choices.innerHTML = '';
   if (n && n.type === 'quiz') return renderQuiz(n);
@@ -115,38 +111,12 @@ function render(){
   if (!n?.choices || n.choices.length === 0) {
     const b = document.createElement('button');
     b.textContent = (state.node === 'good_end' || state.node === 'bad_end') ? '最初から' : 'タイトル';
-    b.onclick = () => { state.node = 'title'; state.hp = 5; state.trial = { node:null, asked:0, correct:0 }; save(); render(); };
+    b.onclick = () => { state.node = 'title'; state.hp = 5; save(); render(); };
     choices.appendChild(b);
   }
 }
 
 function renderQuiz(n){
-  // Shrine special: need 2/3 correct within one visit
-  if (state.node === 'shrine') {
-    if (state.trial.node !== 'shrine') state.trial = { node: 'shrine', asked: 0, correct: 0 };
-    if (state.trial.asked >= 3 || state.trial.correct >= 2) {
-      const pass = state.trial.correct >= 2;
-      if (!pass) {
-        state.hp -= 1;
-        if (state.hp <= 0) { state.node = 'bad_end'; state.trial = { node:null, asked:0, correct:0 }; save(); return render(); }
-      }
-      state.node = pass ? n.next.ok : 'shrine';
-      if (state.node !== 'shrine') state.trial = { node:null, asked:0, correct:0 };
-      save();
-      return render();
-    }
-    const q = n.quiz[Math.floor(Math.random()*n.quiz.length)];
-    dialog.textContent = `試練: 3問中${state.trial.correct}正解 / ${state.trial.asked}問目\n${q.q}`;
-    q.options.forEach(opt => {
-      const b = document.createElement('button');
-      b.textContent = opt;
-      b.onclick = () => { const ok = (opt === q.a); state.trial.asked += 1; if (ok) state.trial.correct += 1; save(); render(); };
-      choices.appendChild(b);
-    });
-    return;
-  }
-
-  // Default single-question flow
   const q = n.quiz[Math.floor(Math.random()*n.quiz.length)];
   dialog.textContent = q.q;
   q.options.forEach(opt => {
