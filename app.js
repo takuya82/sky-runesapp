@@ -1,80 +1,81 @@
-﻿// Sky Runes - Static Chapter Engine (single-question per node)
+// Sky Runes - Static Chapter Engine
 
+// ---------------- Story Data ----------------
 const STORY = {
   nodes: {
     // Title & Overview
     title: {
       title: "Sky Runes - Chapter 1",
       html: [
-        "豬ｮ蟲ｶ縲医せ繧ｫ繧､繝輔ぅ繝ｼ繝ｫ繝峨峨・縲∫･縺ｮ繝ｫ繝ｼ繝ｳ縺ｧ遨ｺ縺ｫ逡吶∪縺｣縺ｦ縺・ｋ縲・,
-        "縺励°縺励亥窮豌励・繝ｫ繝ｼ繝ｳ縲峨′谺縺代∝ｳｶ縺ｯ謠ｺ繧峨℃蟋九ａ縺溪ｦ縲・,
-        "縺ゅ↑縺滂ｼ郁ｦ狗ｿ偵＞謗｢邏｢閠・ｼ峨・莉ｻ蜍吶・縲∫･縲朱｢ｨ縺ｮ髢薙上〒繝ｫ繝ｼ繝ｳ縺ｮ谺迚・ｒ蜿悶ｊ謌ｻ縺吶％縺ｨ縲・,
+        "浮島〈スカイフィールド〉は、祠のルーンで空に留まっている。",
+        "しかし〈勇気のルーン〉が欠け、島は揺らぎ始めた…。",
+        "あなた（見習い探索者）の任務は、祠『風の間』でルーンの欠片を取り戻すこと。",
         "<hr>",
-        "騾ｲ縺ｿ譁ｹ: 驕薙ｒ驕ｸ縺ｳ縲√け繧､繧ｺ縺ｫ豁｣隗｣縺励※蜈医∈騾ｲ繧ゅ≧・医Α繧ｹ縺ｧHP-1・峨・,
+        "進み方: 道を選び、クイズに正解して先へ進もう（ミスでHP-1）。",
       ].join("<br>"),
       choices: [
-        { label: "縺ｯ縺倥ａ繧・, to: "start" },
-        { label: "謫堺ｽ懆ｪｬ譏・, to: "howto" },
-        { label: "迚ｩ隱槭・閭梧勹", to: "lore" },
-        { label: "遶縺ｮ豬√ｌ", to: "map" },
+        { label: "はじめる", to: "start" },
+        { label: "操作説明", to: "howto" },
+        { label: "物語の背景", to: "lore" },
+        { label: "章の流れ", to: "map" },
       ],
     },
     howto: {
-      title: "謫堺ｽ懆ｪｬ譏・,
+      title: "操作説明",
       html: [
-        "繝ｻ蝗帶萱繧ｯ繧､繧ｺ・壽ｭ｣隗｣縺ｧ蜑埼ｲ縲∬ｪ､遲斐〒HP-1・・P=0縺ｧ謨怜圏・・,
-        "繝ｻ繝ｫ繝ｼ繝亥・蟯撰ｼ夐∈繧薙□驕薙〒蜃ｺ鬘後′螟牙喧",
-        "繝ｻ閾ｪ蜍輔そ繝ｼ繝厄ｼ夐ｲ陦御ｽ咲ｽｮ縺ｨHP縺ｯ localStorage 縺ｫ菫晏ｭ・,
-        "繝ｻ譛蛻昴°繧会ｼ壹お繝ｳ繝・ぅ繝ｳ繧ｰ逕ｻ髱｢縺九√ち繧､繝医Ν縺九ｉ蜀埼幕縺ｧ縺阪∪縺・,
+        "・四択クイズ：正解で前進、誤答でHP-1（HP=0で敗北）",
+        "・ルート分岐：選んだ道で出題が変化",
+        "・自動セーブ：進行位置とHPは localStorage に保存",
+        "・最初から：エンディング画面か、タイトルから再開できます",
       ].join("<br>"),
-      choices: [ { label: "謌ｻ繧・, to: "title" }, { label: "縺ｯ縺倥ａ繧・, to: "start" } ],
+      choices: [ { label: "戻る", to: "title" }, { label: "はじめる", to: "start" } ],
     },
     lore: {
-      title: "迚ｩ隱槭・閭梧勹",
+      title: "物語の背景",
       html: [
-        "蟲ｶ繧貞ｷ｡繧矩｢ｨ縺ｯ繝ｫ繝ｼ繝ｳ縺ｮ蜉隴ｷ縺ｧ菫昴◆繧後ｋ縲・,
-        "隕狗ｿ偵＞謗｢邏｢閠・〒縺ゅｋ縺ゅ↑縺溘・縲∫･縲朱｢ｨ縺ｮ髢薙上〒谺迚・ｒ謗｢縺吶％縺ｨ縺ｫ縺ｪ縺｣縺溘・,
-        "驕謎ｸｭ縺ｮ繧ｹ繝ｩ繧､繝縺ｯ險闡峨・鬲泌鴨縺ｫ蜿榊ｿ懊☆繧九よｭ｣縺励＞隱槭ｒ驕ｸ縺ｳ縲∝燕縺ｸ騾ｲ繧ゅ≧縲・,
+        "島を巡る風はルーンの加護で保たれる。",
+        "見習い探索者であるあなたは、祠『風の間』で欠片を探すことになった。",
+        "道中のスライムは言葉の魔力に反応する。正しい語を選び、前へ進もう。",
       ].join("<br>"),
-      choices: [ { label: "謌ｻ繧・, to: "title" } ],
+      choices: [ { label: "戻る", to: "title" } ],
     },
     map: {
-      title: "遶縺ｮ豬√ｌ",
+      title: "章の流れ",
       html: [
-        "start・磯％荳ｭ・俄・ fork・育･縺ｮ髢・俄・ shrine・郁ｩｦ邱ｴ・俄・ boss・医Α繝九・繧ｹ・俄・ ending",
-        "騾比ｸｭ縺ｧ隱､遲斐☆繧九→HP縺梧ｸ帛ｰ代・P=0縺ｧ謨怜圏・亥・謖第姶蜿ｯ・・,
+        "start（道中）→ fork（祠の門）→ shrine（試練）→ boss（ミニボス）→ ending",
+        "途中で誤答するとHPが減少。HP=0で敗北（再挑戦可）",
       ].join("<br>"),
-      choices: [ { label: "謌ｻ繧・, to: "title" } ],
+      choices: [ { label: "戻る", to: "title" } ],
     },
 
     // Main path (single-question nodes)
-    start: { title: "Skyfield", text: "豬ｮ蟲ｶ縺ｮ逾縺ｸ蜷代°縺・る％荳ｭ縺ｫ謨ｵ縺後＞繧九・, choices: [
-      { label: "蛹励・驕薙∈", to: "enemy1" }, { label: "譚ｱ縺ｮ隹ｷ縺ｸ", to: "enemy2" }
+    start: { title: "Skyfield", text: "浮島の祠へ向かう。道中に敵がいる。", choices: [
+      { label: "北の道へ", to: "enemy1" }, { label: "東の谷へ", to: "enemy2" }
     ] },
-    enemy1: { title: "Slime A", text: "闍ｱ蜊倩ｪ槭〒謾ｻ謦・ｼ∵ｭ｣隗｣縺ｧ繝繝｡繝ｼ繧ｸ縲√Α繧ｹ縺ｧHP-1縲・, type: "quiz",
-      quiz: [ { q: "book 縺ｮ諢丞袖縺ｯ・・, options:["譛ｬ","迥ｬ","蟾・,"邂ｱ"], a:"譛ｬ" }, { q:"run 縺ｮ驕主悉蠖｢縺ｯ・・, options:["ran","runed","runned","run"], a:"ran" } ],
+    enemy1: { title: "Slime A", text: "英単語で攻撃！正解でダメージ、ミスでHP-1。", type: "quiz",
+      quiz: [ { q: "book の意味は？", options:["本","犬","川","箱"], a:"本" }, { q:"run の過去形は？", options:["ran","runed","runned","run"], a:"ran" } ],
       next: { ok:"fork", ng:"fork" } },
-    enemy2: { title: "Slime B", text: "蝓ｺ遉取枚豕輔け繧､繧ｺ縲・, type: "quiz",
-      quiz: [ { q:"I ___ a student.", options:["am","is","are","be"], a:"am" }, { q:"She ___ tennis.", options:["plays","play","played・井ｻ奇ｼ・,"to play"], a:"plays" } ],
+    enemy2: { title: "Slime B", text: "基礎文法クイズ。", type: "quiz",
+      quiz: [ { q:"I ___ a student.", options:["am","is","are","be"], a:"am" }, { q:"She ___ tennis.", options:["plays","play","played（今）","to play"], a:"plays" } ],
       next: { ok:"fork", ng:"fork" } },
-    fork: { title: "Shrine Gate", text: "逾縺ｮ蜈･繧雁哨縲ゅΑ繝九・繧ｹ蜑阪↓隰弱ｒ隗｣縺代・, choices: [
-      { label: "逾縺ｫ蜈･繧・, to: "shrine" }, { label: "蠑輔″霑斐☆", to: "start" }
+    fork: { title: "Shrine Gate", text: "祠の入り口。ミニボス前に謎を解け。", choices: [
+      { label: "祠に入る", to: "shrine" }, { label: "引き返す", to: "start" }
     ] },
-    shrine: { title: "Shrine Puzzle", text: "豁｣隗｣縺ｧ騾夐℃縲ょ､ｱ謨励☆繧九→HP-1縺ｧ蜀肴倦謌ｦ縲・, type: "quiz",
-      quiz: [ { q:"because 縺ｮ諢丞袖縺ｯ・・, options:["縺ｪ縺懊↑繧・,"縺励°縺・,"縺昴ｌ繧・∴","縺昴ｌ縺ｫ繧ゅ°縺九ｏ繧峨★"], a:"縺ｪ縺懊↑繧・ }, { q:"much 縺ｮ豈碑ｼ・ｴ壹・・・, options:["more","most","many","more than"], a:"more" }, { q:"There ___ a pen on the desk.", options:["is","are","be","was"], a:"is" } ],
+    shrine: { title: "Shrine Puzzle", text: "正解で通過。失敗するとHP-1で再挑戦。", type: "quiz",
+      quiz: [ { q:"because の意味は？", options:["なぜなら","しかし","それゆえ","それにもかかわらず"], a:"なぜなら" }, { q:"much の比較級は？", options:["more","most","many","more than"], a:"more" }, { q:"There ___ a pen on the desk.", options:["is","are","be","was"], a:"is" } ],
       next: { ok:"boss", ng:"shrine" } },
-    boss: { title: "Mini Boss", text: "譛蠕後・荳蝠擾ｼ・, type: "quiz",
-      quiz: [ { q:"縲悟ｽｼ縺ｯ譏ｨ譌･縺薙％縺ｫ譚･縺溘阪ｒ闍ｱ險ｳ縺帙ｈ縲・, options:["He came here yesterday.","He comes here yesterday.","He is here yesterday.","He was come here yesterday."], a:"He came here yesterday." } ],
+    boss: { title: "Mini Boss", text: "最後の一問！", type: "quiz",
+      quiz: [ { q:"「彼は昨日ここに来た」を英訳せよ。", options:["He came here yesterday.","He comes here yesterday.","He is here yesterday.","He was come here yesterday."], a:"He came here yesterday." } ],
       next: { ok:"good_end", ng:"bad_end" } },
-    good_end: { title: "Clear!", text: "蜍・ｰ励・谺迚・′蜈峨ｊ縲・｢ｨ縺悟ｮ牙ｮ壹＠縺溘ら･縺ｯ髱吶￠縺輔ｒ蜿悶ｊ謌ｻ縺吶よｬ｡遶縺ｧ谿九ｋ谺迚・ｒ謗｢縺昴≧縲・ },
-    bad_end: { title: "Game Over", text: "蜉帛ｰｽ縺阪◆窶ｦ 蟲ｶ縺ｮ鬚ｨ縺ｯ縺ｾ縺荳榊ｮ牙ｮ壹□縲よｺ門ｙ繧呈紛縺医※縲√ｂ縺・ｸ蠎ｦ謖第姶縺励ｈ縺・・ },
+    good_end: { title: "Clear!", text: "勇気の欠片が光り、風が安定した。祠は静けさを取り戻す。次章で残る欠片を探そう。" },
+    bad_end: { title: "Game Over", text: "力尽きた… 島の風はまだ不安定だ。準備を整えて、もう一度挑戦しよう。" },
   }
 };
 
-// Engine ----------------------------------------------------
+// ---------------- Engine ----------------
 const state = {
   hp: Number(localStorage.getItem('hp')) || 5,
-  node: localStorage.getItem('node') || 'title',
+  node: 'title',
   data: STORY,
 };
 
@@ -84,22 +85,26 @@ const scene = $('#scene'), dialog = $('#dialog'), choices = $('#choices'), statu
 function save(){ localStorage.setItem('hp', state.hp); localStorage.setItem('node', state.node); }
 function clearSave(){ try { localStorage.removeItem('hp'); localStorage.removeItem('node'); } catch {} }
 
+function stepIndex(id){ return id==='start'?0:id==='fork'?1:id==='shrine'?2:id==='boss'?3:4; }
+function stepLabel(id){ return id==='start'?'Start':id==='fork'?'Gate':id==='shrine'?'Shrine':id==='boss'?'Boss':'End'; }
+
 function render(){
   const n = state.data.nodes[state.node];
   // header + progress
   scene.innerHTML = `<span class="badge">Scene: ${n.title}</span>`;
   const flowNodes = ['start','enemy1','enemy2','fork','shrine','boss','good_end','bad_end'];
   if (flowNodes.includes(state.node)) {
-    const idx = (id)=> id==='start'?0:id==='fork'?1:id==='shrine'?2:id==='boss'?3:4;
-    const cur = idx(state.node);
+    const cur = stepIndex(state.node);
     const labels = ['Start','Gate','Shrine','Boss','End'];
     const parts = labels.map((lb,i)=> i<cur?`<span class="crumb done">${lb}</span>`: i===cur?`<span class="crumb cur">${lb}</span>`:`<span class="crumb">${lb}</span>`);
-    scene.insertAdjacentHTML('beforeend', `<div class="crumbs">${parts.join(' <span class="sep">竊・/span> ')}</div>`);
+    scene.insertAdjacentHTML('beforeend', `<div class="crumbs">${parts.join(' <span class="sep">→</span> ')}</div>`);
   }
+
   // body
   if (n && n.html) dialog.innerHTML = n.html; else dialog.textContent = n?.text || '';
   // status
   status.innerHTML = `<span class="badge">HP:${state.hp}</span>`;
+
   // choices
   choices.innerHTML = '';
   if (n && n.type === 'quiz') return renderQuiz(n);
@@ -110,7 +115,7 @@ function render(){
     choices.appendChild(b);
   });
 
-  // title actions: offer Continue if a save exists
+  // title: show Continue if a save exists, and Clear
   if (state.node === 'title') {
     try {
       const sn = localStorage.getItem('node');
@@ -122,20 +127,24 @@ function render(){
         c.textContent = `続きから（${t} / HP:${sh}）`;
         c.onclick = () => { state.node = sn; state.hp = sh || state.hp; save(); render(); };
         choices.appendChild(c);
+        // also attach a small note under dialog
+        const note = document.createElement('div');
+        note.className = 'muted';
+        note.textContent = `前回到達: ${stepLabel(sn)}`;
+        dialog.appendChild(note);
       }
     } catch {}
-  }
-  // extra action on title: clear save
-  if (state.node === 'title') {
     const b = document.createElement('button');
     b.className = 'btn';
-    b.textContent = '繧ｻ繝ｼ繝匁ｶ亥悉';
+    b.textContent = 'セーブ消去';
     b.onclick = () => { clearSave(); state.hp = 5; state.node = 'title'; render(); };
     choices.appendChild(b);
   }
+
+  // endings: add back-to-title button
   if (!n?.choices || n.choices.length === 0) {
     const b = document.createElement('button');
-    b.textContent = (state.node === 'good_end' || state.node === 'bad_end') ? '譛蛻昴°繧・ : '繧ｿ繧､繝医Ν';
+    b.textContent = (state.node === 'good_end' || state.node === 'bad_end') ? '最初から' : 'タイトル';
     b.onclick = () => { state.node = 'title'; state.hp = 5; save(); render(); };
     choices.appendChild(b);
   }
@@ -150,7 +159,7 @@ function renderQuiz(n){
     b.onclick = () => {
       const ok = (opt === q.a);
       if (!ok) state.hp -= 1;
-      if (state.hp <= 0) state.node = 'bad_end'; else state.node = ok ? n.next.ok : n.next.ng;
+      state.node = (state.hp <= 0) ? 'bad_end' : (ok ? n.next.ok : n.next.ng);
       save(); render();
     };
     choices.appendChild(b);
@@ -158,3 +167,4 @@ function renderQuiz(n){
 }
 
 window.addEventListener('DOMContentLoaded', render);
+
