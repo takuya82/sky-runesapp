@@ -66,8 +66,8 @@ const STORY = {
     boss: { title: "Mini Boss", text: "最後の一問！", type: "quiz",
       quiz: [ { q:"「彼は昨日ここに来た」を英訳せよ。", options:["He came here yesterday.","He comes here yesterday.","He is here yesterday.","He was come here yesterday."], a:"He came here yesterday." } ],
       next: { ok:"good_end", ng:"bad_end" } },
-    good_end: { title: "Clear!", text: "章クリア！もう一度遊ぶ？" },
-    bad_end: { title: "Game Over", text: "また挑戦しよう。" },
+    good_end: { title: "Clear!", text: "勇気の欠片が光り、風が安定した。祠は静けさを取り戻す。次章で残る欠片を探そう。" },
+    bad_end: { title: "Game Over", text: "力尽きた… 島の風はまだ不安定だ。準備を整えて、もう一度挑戦しよう。" },
   }
 };
 
@@ -82,6 +82,7 @@ const $ = (s) => document.querySelector(s);
 const scene = $('#scene'), dialog = $('#dialog'), choices = $('#choices'), status = $('#status');
 
 function save(){ localStorage.setItem('hp', state.hp); localStorage.setItem('node', state.node); }
+function clearSave(){ try { localStorage.removeItem('hp'); localStorage.removeItem('node'); } catch {} }
 
 function render(){
   const n = state.data.nodes[state.node];
@@ -108,6 +109,14 @@ function render(){
     b.onclick = () => { state.node = c.to; save(); render(); };
     choices.appendChild(b);
   });
+  // extra action on title: clear save
+  if (state.node === 'title') {
+    const b = document.createElement('button');
+    b.className = 'btn';
+    b.textContent = 'セーブ消去';
+    b.onclick = () => { clearSave(); state.hp = 5; state.node = 'title'; render(); };
+    choices.appendChild(b);
+  }
   if (!n?.choices || n.choices.length === 0) {
     const b = document.createElement('button');
     b.textContent = (state.node === 'good_end' || state.node === 'bad_end') ? '最初から' : 'タイトル';
@@ -133,4 +142,3 @@ function renderQuiz(n){
 }
 
 window.addEventListener('DOMContentLoaded', render);
-
