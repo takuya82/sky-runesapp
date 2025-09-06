@@ -78,6 +78,7 @@ const state = {
   hp: Number(localStorage.getItem('hp')) || 5,
   node: 'title',
   data: STORY,
+  intro: {},
 };
 
 const $ = (s) => document.querySelector(s);
@@ -189,6 +190,22 @@ function render(){
   if (n && n.html) dialog.innerHTML = n.html; else dialog.textContent = n?.text || '';
   // status
   status.innerHTML = `<span class="badge">HP:${state.hp}</span>`;
+
+  // intro gate: once per session for key nodes
+  const __introTargets = { start:1, fork:1, shrine:1, boss:1 };
+  if (__introTargets[state.node] && !state.intro[state.node]) {
+    const text = FLAVOR[state.node] || '';
+    if (text) dialog.innerHTML = `<p>${text}</p>`;
+    choices.innerHTML = '';
+    const btn = document.createElement('button');
+    btn.className = 'btn btn-primary';
+    btn.textContent = '進む';
+    btn.onclick = ()=>{ state.intro[state.node] = true; render(); };
+    choices.appendChild(btn);
+    const firstBtn = choices.querySelector('button');
+    if (firstBtn) try { firstBtn.focus({ preventScroll:true }); } catch {}
+    return;
+  }
 
   // choices
   choices.innerHTML = '';
