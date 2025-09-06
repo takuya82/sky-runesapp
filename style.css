@@ -51,3 +51,12 @@ main#game section { margin: 12px 0; padding: 12px; border: 1px solid var(--borde
 .crumb.cur { background: #0b1220; color: var(--fg); }
 .crumb.done { background: #065f46; color: #d1fae5; border-color: #065f46; }
 .sep { opacity: .6; margin: 0 2px; }
+
+/* Mobile tweaks */
+@media (max-width: 480px) {
+  body { font-size: 15px; }
+  .btn { padding: 10px 14px; border-radius: 12px; }
+  #choices button { margin: 6px 8px 0 0; }
+  .badge { font-size: 11px; }
+  .crumbs { font-size: 11px; }
+}

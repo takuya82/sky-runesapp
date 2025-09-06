@@ -85,6 +85,30 @@ const scene = $('#scene'), dialog = $('#dialog'), choices = $('#choices'), statu
 function save(){ localStorage.setItem('hp', state.hp); localStorage.setItem('node', state.node); }
 function clearSave(){ try { localStorage.removeItem('hp'); localStorage.removeItem('node'); } catch {} }
 
+// ---------------- Sound (WebAudio, tiny beeps) ----------------
+const sound = {
+  enabled: (()=>{ try { return localStorage.getItem('se') !== '0'; } catch { return true; } })(),
+  ctx: null,
+  play(type){
+    try {
+      if (!this.enabled) return;
+      if (!this.ctx) this.ctx = new (window.AudioContext||window.webkitAudioContext)();
+      const now = this.ctx.currentTime;
+      const o = this.ctx.createOscillator();
+      const g = this.ctx.createGain();
+      o.type = 'sine';
+      o.frequency.value = type==='ok'? 880 : type==='ng'? 220 : 440;
+      g.gain.setValueAtTime(0, now);
+      g.gain.linearRampToValueAtTime(0.12, now + 0.02);
+      g.gain.exponentialRampToValueAtTime(0.0001, now + (type==='ng'? 0.25 : 0.12));
+      o.connect(g).connect(this.ctx.destination);
+      o.start(now);
+      o.stop(now + (type==='ng'? 0.28 : 0.14));
+    } catch {}
+  },
+  toggle(){ this.enabled = !this.enabled; try { localStorage.setItem('se', this.enabled? '1':'0'); } catch {} }
+};
+
 function stepIndex(id){
   if (id==='start' || id==='enemy1' || id==='enemy2') return 0; // 道中扱い
   if (id==='fork') return 1;
@@ -123,7 +147,7 @@ function render(){
   (n?.choices || []).forEach(c => {
     const b = document.createElement('button');
     b.textContent = c.label;
-    b.onclick = () => { state.node = c.to; save(); render(); };
+    b.onclick = () => { sound.play('nav'); state.node = c.to; save(); render(); };
     choices.appendChild(b);
   });
 
@@ -137,7 +161,7 @@ function render(){
         c.className = 'btn btn-primary';
         const t = STORY.nodes[sn]?.title || sn;
         c.textContent = `続きから（${t} / HP:${sh}）`;
-        c.onclick = () => { state.node = sn; state.hp = sh || state.hp; save(); render(); };
+        c.onclick = () => { sound.play('nav'); state.node = sn; state.hp = sh || state.hp; save(); render(); };
         choices.appendChild(c);
         // also attach a small note under dialog
         const note = document.createElement('div');
@@ -146,6 +170,12 @@ function render(){
         dialog.appendChild(note);
       }
     } catch {}
+    // sound toggle
+    const tgl = document.createElement('button');
+    tgl.className = 'btn';
+    tgl.textContent = `サウンド: ${sound.enabled? 'ON':'OFF'}`;
+    tgl.onclick = () => { sound.toggle(); tgl.textContent = `サウンド: ${sound.enabled? 'ON':'OFF'}`; sound.play('nav'); };
+    choices.appendChild(tgl);
     const b = document.createElement('button');
     b.className = 'btn';
     b.textContent = 'セーブ消去';
@@ -171,6 +201,7 @@ function renderQuiz(n){
     b.onclick = () => {
       const ok = (opt === q.a);
       if (!ok) state.hp -= 1;
+      sound.play(ok? 'ok' : 'ng');
       state.node = (state.hp <= 0) ? 'bad_end' : (ok ? n.next.ok : n.next.ng);
       save(); render();
     };
