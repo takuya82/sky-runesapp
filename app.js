@@ -1,98 +1,147 @@
-// ====== story data (inline) ======
+// Story + Engine (static, no build)
+
 const STORY = {
-  "nodes": {
-    "start": {
-      "title": "Skyfield",
-      "text": "浮島の祠へ向かう。道中に敵がいる。",
-      "choices": [
-        {"label": "北の道へ", "to": "enemy1"},
-        {"label": "東の谷へ", "to": "enemy2"}
-      ]
-    },
-    "enemy1": {
-      "title": "Slime A",
-      "text": "英単語で攻撃！正解でダメージ、ミスでHP-1。",
-      "type": "quiz",
-      "quiz": [
-        {"q":"book の意味は？","options":["本","犬","川","箱"],"a":"本"},
-        {"q":"run の過去形は？","options":["ran","runed","runned","run"],"a":"ran"}
+  nodes: {
+    // Title & Overview
+    title: {
+      title: "Sky Runes - Chapter 1",
+      html: [
+        "浮島〈スカイフィールド〉は、祠のルーンで空に留まっている。",
+        "しかし〈勇気のルーン〉が欠け、島は揺らぎ始めた…。",
+        "あなた（見習い探索者）の任務は、祠『風の間』でルーンの欠片を取り戻すこと。",
+        "<hr>",
+        "進み方: 道を選び、クイズに正解して先へ進もう（ミスでHP-1）。",
+      ].join("<br>"),
+      choices: [
+        { label: "はじめる", to: "start" },
+        { label: "操作説明", to: "howto" },
+        { label: "物語の背景", to: "lore" },
+        { label: "章の流れ", to: "map" },
       ],
-      "next": {"ok":"fork", "ng":"fork"}
     },
-    "enemy2": {
-      "title": "Slime B",
-      "text": "基礎文法クイズ。",
-      "type": "quiz",
-      "quiz": [
-        {"q":"I ___ a student.","options":["am","is","are","be"],"a":"am"},
-        {"q":"She ___ tennis.","options":["plays","play","played（今）","to play"],"a":"plays"}
+    howto: {
+      title: "操作説明",
+      html: [
+        "・四択クイズ：正解で前進、誤答でHP-1（HP=0で敗北）",
+        "・ルート分岐：選んだ道で出題が変化",
+        "・自動セーブ：進行位置とHPは localStorage に保存",
+        "・最初から：エンディング画面か、タイトルから再開できます",
+      ].join("<br>"),
+      choices: [ { label: "戻る", to: "title" }, { label: "はじめる", to: "start" } ],
+    },
+    lore: {
+      title: "物語の背景",
+      html: [
+        "島を巡る風はルーンの加護で保たれる。",
+        "見習い探索者であるあなたは、祠『風の間』で欠片を探すことになった。",
+        "道中のスライムは言葉の魔力に反応する。正しい語を選び、前へ進もう。",
+      ].join("<br>"),
+      choices: [ { label: "戻る", to: "title" } ],
+    },
+    map: {
+      title: "章の流れ",
+      html: [
+        "start（道中）→ fork（祠の門）→ shrine（試練）→ boss（ミニボス）→ ending",
+        "途中で誤答するとHPが減少。HP=0で敗北（再挑戦可）",
+      ].join("<br>"),
+      choices: [ { label: "戻る", to: "title" } ],
+    },
+
+    // Main path
+    start: {
+      title: "Skyfield",
+      text: "浮島の祠へ向かう。道中に敵がいる。",
+      choices: [
+        { label: "北の道へ", to: "enemy1" },
+        { label: "東の谷へ", to: "enemy2" },
       ],
-      "next": {"ok":"fork", "ng":"fork"}
     },
-    "fork": {
-      "title": "Shrine Gate",
-      "text": "祠の入り口。ミニボス前に謎を解け（2/3正解で通過）。",
-      "choices": [
-        {"label": "祠に入る", "to": "shrine"},
-        {"label": "引き返す", "to": "start"}
-      ]
-    },
-    "shrine": {
-      "title": "Shrine Puzzle",
-      "text": "3問中2問正解で通過。失敗するとHP-1で再挑戦。",
-      "type": "quiz",
-      "quiz": [
-        {"q":"because の意味は？","options":["なぜなら","しかし","それゆえ","それにもかかわらず"],"a":"なぜなら"},
-        {"q":"much の比較級は？","options":["more","most","many","more than"],"a":"more"},
-        {"q":"There ___ a pen on the desk.","options":["is","are","be","was"],"a":"is"}
+    enemy1: {
+      title: "Slime A",
+      text: "英単語で攻撃！正解でダメージ、ミスでHP-1。",
+      type: "quiz",
+      quiz: [
+        { q: "book の意味は？", options: ["本", "犬", "川", "箱"], a: "本" },
+        { q: "run の過去形は？", options: ["ran", "runed", "runned", "run"], a: "ran" },
       ],
-      "next": {"ok":"boss", "ng":"shrine"}
+      next: { ok: "fork", ng: "fork" },
     },
-    "boss": {
-      "title": "Mini Boss",
-      "text": "最後の一問！",
-      "type": "quiz",
-      "quiz": [
-        {"q":"「彼は昨日ここに来た」を英訳せよ。","options":["He came here yesterday.","He comes here yesterday.","He is here yesterday.","He was come here yesterday."],"a":"He came here yesterday."}
+    enemy2: {
+      title: "Slime B",
+      text: "基礎文法クイズ。",
+      type: "quiz",
+      quiz: [
+        { q: "I ___ a student.", options: ["am", "is", "are", "be"], a: "am" },
+        { q: "She ___ tennis.", options: ["plays", "play", "played（今）", "to play"], a: "plays" },
       ],
-      "next": {"ok":"good_end", "ng":"bad_end"}
+      next: { ok: "fork", ng: "fork" },
     },
-    "good_end": {"title":"Clear!","text":"章クリア！もう一度遊ぶ？"},
-    "bad_end": {"title":"Game Over","text":"また挑戦しよう。"}
-  }
+    fork: {
+      title: "Shrine Gate",
+      text: "祠の入り口。ミニボス前に謎を解け（2/3正解で通過）。",
+      choices: [
+        { label: "祠に入る", to: "shrine" },
+        { label: "引き返す", to: "start" },
+      ],
+    },
+    shrine: {
+      title: "Shrine Puzzle",
+      text: "3問中2問正解で通過。失敗するとHP-1で再挑戦。",
+      type: "quiz",
+      quiz: [
+        { q: "because の意味は？", options: ["なぜなら", "しかし", "それゆえ", "それにもかかわらず"], a: "なぜなら" },
+        { q: "much の比較級は？", options: ["more", "most", "many", "more than"], a: "more" },
+        { q: "There ___ a pen on the desk.", options: ["is", "are", "be", "was"], a: "is" },
+      ],
+      next: { ok: "boss", ng: "shrine" },
+    },
+    boss: {
+      title: "Mini Boss",
+      text: "最後の一問！",
+      type: "quiz",
+      quiz: [
+        { q: "「彼は昨日ここに来た」を英訳せよ。", options: ["He came here yesterday.", "He comes here yesterday.", "He is here yesterday.", "He was come here yesterday."], a: "He came here yesterday." },
+      ],
+      next: { ok: "good_end", ng: "bad_end" },
+    },
+    good_end: { title: "Clear!", text: "章クリア！もう一度遊ぶ？" },
+    bad_end: { title: "Game Over", text: "また挑戦しよう。" },
+  },
 };
 
-// ====== game core ======
+// Engine ----------------------------------------------------
 const state = {
   hp: Number(localStorage.getItem("hp")) || 5,
-  node: localStorage.getItem("node") || "start",
-  data: STORY
+  node: localStorage.getItem("node") || "title",
+  data: STORY,
 };
-const $ = s => document.querySelector(s);
+
+const $ = (s) => document.querySelector(s);
 const scene = $("#scene"), dialog = $("#dialog"), choices = $("#choices"), status = $("#status");
 
 function save(){ localStorage.setItem("hp", state.hp); localStorage.setItem("node", state.node); }
 
 function render(){
   const n = state.data.nodes[state.node];
-  scene.innerHTML = `<div class="badge">Scene: ${n.title}</div>`;
-  dialog.textContent = n.text;
+  // header
+  scene.innerHTML = `<span class="badge">Scene: ${n.title}</span>`;
+  // body (html > text)
+  if (n && n.html) dialog.innerHTML = n.html; else dialog.textContent = n?.text || "";
+  // status (HP shown always; titleから再開可)
   status.innerHTML = `<span class="badge">HP:${state.hp}</span>`;
+  // choices
   choices.innerHTML = "";
-
-  if(n.type === "quiz"){ return renderQuiz(n); }
-
-  (n.choices||[]).forEach(c=>{
+  if(n && n.type === "quiz") return renderQuiz(n);
+  (n?.choices || []).forEach(c => {
     const b = document.createElement("button");
     b.textContent = c.label;
-    b.onclick = ()=>{ state.node = c.to; save(); render(); };
+    b.onclick = () => { state.node = c.to; save(); render(); };
     choices.appendChild(b);
   });
-
-  if(!n.choices || n.choices.length===0){
+  if(!n?.choices || n.choices.length===0){
     const b = document.createElement("button");
-    b.textContent = "最初から";
-    b.onclick = ()=>{ state.node="start"; state.hp=5; save(); render(); };
+    b.textContent = (state.node === 'good_end' || state.node === 'bad_end') ? '最初から' : 'タイトル';
+    b.onclick = ()=>{ state.node='title'; state.hp=5; save(); render(); };
     choices.appendChild(b);
   }
 }
@@ -105,8 +154,8 @@ function renderQuiz(n){
     b.textContent = opt;
     b.onclick = ()=>{
       const ok = (opt === q.a);
-      state.hp += ok ? 0 : -1;
-      if(state.hp<=0){ state.node="bad_end"; }
+      if(!ok) state.hp -= 1;
+      if(state.hp<=0){ state.node='bad_end'; }
       else { state.node = ok ? n.next.ok : n.next.ng; }
       save(); render();
     };

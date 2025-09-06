@@ -12,8 +12,9 @@ Files
 
 Dev
 - Open `index.html` directly in a browser (no build required)
+- Saves: `localStorage` keys `hp`, `node`
+- Reset: click "最初から" in the UI, or clear those keys from DevTools
 
 Deploy (Vercel)
 - Import this repo on Vercel as a static site (no build command).
 - Output directory: repo root (contains `index.html`).
-
