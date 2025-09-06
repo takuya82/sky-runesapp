@@ -7,9 +7,9 @@ const STORY = {
     title: {
       title: "Sky Runes - Chapter 1",
       html: [
-        "浮島〈スカイフィールド〉は、祠のルーンで空に留まっている。",
-        "しかし〈勇気のルーン〉が欠け、島は揺らぎ始めた…。",
-        "あなた（見習い探索者）の任務は、祠『風の間』でルーンの欠片を取り戻すこと。",
+        "浮島〈スカイフィールド〉は祠のルーンで空に留まっている。",
+        "だが〈勇気のルーン〉が欠け、島はゆっくりと不安定になりつつあった。",
+        "見習い探索者のあなたは、祠『風の間』で欠片を回収する任務を受ける。",
         "<hr>",
         "進み方: 道を選び、クイズに正解して先へ進もう（ミスでHP-1）。",
       ].join("<br>"),
@@ -23,27 +23,27 @@ const STORY = {
     howto: {
       title: "操作説明",
       html: [
-        "・四択クイズ：正解で前進、誤答でHP-1（HP=0で敗北）",
-        "・ルート分岐：選んだ道で出題が変化",
-        "・自動セーブ：進行位置とHPは localStorage に保存",
-        "・最初から：エンディング画面か、タイトルから再開できます",
+        "・四択クイズ: 正解で前進、誤答でHP-1（HP=0で敗北）",
+        "・分岐: 選んだ道で出題内容が変わる",
+        "・自動セーブ: 位置とHPは localStorage に保存",
+        "・再開/やり直し: タイトルの『続きから』『セーブ消去』で管理",
       ].join("<br>"),
       choices: [ { label: "戻る", to: "title" }, { label: "はじめる", to: "start" } ],
     },
     lore: {
       title: "物語の背景",
       html: [
-        "島を巡る風はルーンの加護で保たれる。",
-        "見習い探索者であるあなたは、祠『風の間』で欠片を探すことになった。",
-        "道中のスライムは言葉の魔力に反応する。正しい語を選び、前へ進もう。",
+        "島を巡る風はルーンの加護で保たれている。",
+        "欠けたのは〈勇気〉の欠片。祠の内奥に落ちたとも、奪われたとも噂される。",
+        "道中の魔物は言葉の力に反応する。正しい語を選び、風の加護を取り戻せ。",
       ].join("<br>"),
       choices: [ { label: "戻る", to: "title" } ],
     },
     map: {
       title: "章の流れ",
       html: [
-        "start（道中）→ fork（祠の門）→ shrine（試練）→ boss（ミニボス）→ ending",
-        "途中で誤答するとHPが減少。HP=0で敗北（再挑戦可）",
+        "Start（道中）→ Gate（祠の門）→ Shrine（試練）→ Boss（小ボス）→ Ending",
+        "誤答でHP-1。HPが0になると敗北（タイトルから再挑戦可）",
       ].join("<br>"),
       choices: [ { label: "戻る", to: "title" } ],
     },
@@ -85,8 +85,20 @@ const scene = $('#scene'), dialog = $('#dialog'), choices = $('#choices'), statu
 function save(){ localStorage.setItem('hp', state.hp); localStorage.setItem('node', state.node); }
 function clearSave(){ try { localStorage.removeItem('hp'); localStorage.removeItem('node'); } catch {} }
 
-function stepIndex(id){ return id==='start'?0:id==='fork'?1:id==='shrine'?2:id==='boss'?3:4; }
-function stepLabel(id){ return id==='start'?'Start':id==='fork'?'Gate':id==='shrine'?'Shrine':id==='boss'?'Boss':'End'; }
+function stepIndex(id){
+  if (id==='start' || id==='enemy1' || id==='enemy2') return 0; // 道中扱い
+  if (id==='fork') return 1;
+  if (id==='shrine') return 2;
+  if (id==='boss') return 3;
+  return 4;
+}
+function stepLabel(id){
+  if (id==='start' || id==='enemy1' || id==='enemy2') return 'Start';
+  if (id==='fork') return 'Gate';
+  if (id==='shrine') return 'Shrine';
+  if (id==='boss') return 'Boss';
+  return 'End';
+}
 
 function render(){
   const n = state.data.nodes[state.node];
@@ -167,4 +179,3 @@ function renderQuiz(n){
 }
 
 window.addEventListener('DOMContentLoaded', render);
-
