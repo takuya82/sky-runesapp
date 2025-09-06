@@ -69,7 +69,9 @@ main#game section { margin: 12px 0; padding: 12px; border: 1px solid var(--borde
 
 /* Scene illustration */
 .illust { margin: 10px 0 14px; }
-.illust img { width: 100%; max-height: 220px; object-fit: cover; border-radius: 10px; border: 1px solid var(--border); box-shadow: 0 6px 20px rgba(0,0,0,.25); display: block; }
+.illust img { width: 100%; max-height: 220px; object-fit: cover; border-radius: 10px; border: 1px solid var(--border); box-shadow: 0 6px 20px rgba(0,0,0,.25); display: block; opacity: 0; animation: fadeIn .35s ease forwards; }
+.flavor { font-style: italic; color: var(--muted); margin: 6px 2px 10px; }
+@keyframes fadeIn { to { opacity: 1; } }
 
 /* Hero Title */
 .hero { text-align: center; margin: 12px 0 16px; }

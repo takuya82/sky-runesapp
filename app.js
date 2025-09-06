@@ -137,6 +137,18 @@ const ART = {
   bad_end: 'image/sky runes.jpg',
 };
 
+// Short flavor lines for each scene
+const FLAVOR = {
+  start: '風が路を描き、浮島の草がささやく。',
+  enemy1: '言葉に反応する粘体が道をふさぐ。',
+  enemy2: '谷間に冷たい気流。耳を澄ませ。',
+  fork: '祠の門は静かに風を吐き出している。',
+  shrine: '石壁に刻まれた古い符、かすかな囁き。',
+  boss: '薄明かりの中、影がこちらを見ている。',
+  good_end: '風は落ち着き、空は澄みわたった。',
+  bad_end: '暗い気流が島を覆う――まだ終わらない。',
+};
+
 function render(){
   const n = state.data.nodes[state.node];
   // header + progress
@@ -160,6 +172,16 @@ function render(){
       img.src = artSrc;
       fig.appendChild(img);
       scene.appendChild(fig);
+    }
+    // flavor line
+    const fl = FLAVOR[state.node];
+    const oldF = scene.querySelector('.flavor');
+    if (oldF) oldF.remove();
+    if (fl) {
+      const p = document.createElement('div');
+      p.className = 'flavor';
+      p.textContent = fl;
+      scene.appendChild(p);
     }
   }
 
