@@ -79,6 +79,7 @@ const state = {
   node: 'title',
   data: STORY,
   intro: {},
+  session: null, // quiz session state
 };
 
 const $ = (s) => document.querySelector(s);
@@ -154,6 +155,20 @@ const FLAVOR = {
   good_end: '風は落ち着き、空は澄みわたった。',
   bad_end: '暗い気流が島を覆う――まだ終わらない。',
 };
+
+// Quiz session config per node (count = questions per session, pass = min correct)
+const QUIZ_CFG = {
+  enemy1: { count: 2, pass: 2 },
+  enemy2: { count: 2, pass: 2 },
+  shrine: { count: 3, pass: 2 },
+  boss:   { count: 1, pass: 1 },
+};
+function getQuizCfg(id, poolLen){
+  const cfg = QUIZ_CFG[id] || { count: 1, pass: 1 };
+  const count = Math.max(1, Math.min(cfg.count, poolLen||1));
+  const pass = Math.max(1, Math.min(cfg.pass, count));
+  return { count, pass };
+}
 
 function render(){
   const n = state.data.nodes[state.node];
@@ -338,37 +353,70 @@ function render(){
 }
 
 function renderQuiz(n){
-  const q = n.quiz[Math.floor(Math.random()*n.quiz.length)];
-  dialog.textContent = q.q;
+  // init or resume session
+  const pool = n.quiz || [];
+  const { count, pass } = getQuizCfg(state.node, pool.length);
+  if (!state.session || state.session.id !== state.node) {
+    state.session = { id: state.node, left: count, ok: 0, asked: [] };
+  }
+  const sess = state.session;
+
+  // pick a question not asked yet
+  const remain = pool.map((_,i)=>i).filter(i=>!sess.asked.includes(i));
+  const pickIndex = remain[Math.floor(Math.random()*remain.length)] ?? 0;
+  const q = pool[pickIndex];
+  sess.asked.push(pickIndex);
+
+  // header/progress
+  const solved = count - sess.left;
+  const prog = `Q ${solved+1}/${count} ・ 正解 ${sess.ok}/${count} （合格: ${pass}）`;
+  dialog.textContent = `${prog}\n${q.q}`;
+
+  // difficulty badge if present (q.d: 'E'|'M'|'H')
+  if (q.d) {
+    const badge = document.createElement('div');
+    badge.className = 'label ' + (q.d==='H'?'label-ng':q.d==='E'?'label-ok':'');
+    badge.textContent = `難度: ${q.d}`;
+    dialog.appendChild(badge);
+  }
+
   q.options.forEach(opt => {
     const b = document.createElement('button');
     b.textContent = opt;
     b.onclick = () => {
       const ok = (opt === q.a);
-      if (!ok) {
+      if (ok) sess.ok += 1; else {
         state.hp -= 1;
         try {
-          // brief damage flash on screen
           document.body.classList.remove('hurt');
-          void document.body.offsetWidth; // reflow to restart animation
+          void document.body.offsetWidth; // restart animation
           document.body.classList.add('hurt');
           setTimeout(()=>{ document.body.classList.remove('hurt'); }, 320);
         } catch {}
       }
       sound.play(ok? 'ok' : 'ng');
-      // visual feedback on the selected button and lock inputs
+      // button feedback and lock
       try {
         const btns = Array.from(choices.querySelectorAll('button'));
         btns.forEach(x => x.disabled = true);
         b.classList.add(ok ? 'choice-ok' : 'choice-ng');
       } catch {}
-      const nextNode = (state.hp <= 0) ? 'bad_end' : (ok ? n.next.ok : n.next.ng);
-      setTimeout(() => { state.node = nextNode; save(); render(); }, ok ? 180 : 320);
+
+      // advance session or finish
+      sess.left -= 1;
+      const goBad = (state.hp <= 0);
+      if (!goBad && sess.left > 0) {
+        setTimeout(()=>{ render(); }, ok ? 180 : 320);
+        return;
+      }
+      const passed = (sess.ok >= pass);
+      const nextNode = goBad ? 'bad_end' : (passed ? n.next.ok : n.next.ng);
+      state.session = null;
+      setTimeout(()=>{ state.node = nextNode; save(); render(); }, ok ? 180 : 320);
     };
     choices.appendChild(b);
   });
 
-  // show number hints 1..n for keyboard users
   const hint = document.createElement('div');
   hint.className = 'muted';
   hint.textContent = '数字キー 1-4 で選択';

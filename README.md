@@ -21,7 +21,13 @@ Usage tips
 - UI: HP shows as a number and hearts (♥ up to 5).
 - Feedback: Wrong answers briefly flash a red tint (damage cue).
 - Breadcrumbs: Hover each step to see a short description.
- - Choices: Selected answer briefly highlights green (OK) or red (NG).
+- Choices: Selected answer briefly highlights green (OK) or red (NG).
+
+Quiz sessions
+- Each quiz node now asks multiple questions per encounter.
+- Defaults: enemy=2 questions (need 2 correct), shrine=3 (need 2), boss=1 (need 1).
+- Progress shows like: `Q 1/2 • 正解 0/2 (合格: 2)`; pass/fail then routes via node.next.
+- Authoring: optional difficulty `d: 'E'|'M'|'H'` on each question renders a label.
 
 Deploy (Vercel)
 - Import this repo on Vercel as a static site (no build command).
