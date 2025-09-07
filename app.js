@@ -243,6 +243,12 @@ function render(){
     tgl.textContent = `サウンド: ${sound.enabled? 'ON':'OFF'}`;
     tgl.onclick = () => { sound.toggle(); tgl.textContent = `サウンド: ${sound.enabled? 'ON':'OFF'}`; sound.play('nav'); };
     choices.appendChild(tgl);
+    // new game (clear save then start from beginning)
+    const ng = document.createElement('button');
+    ng.className = 'btn btn-primary';
+    ng.textContent = 'ニューゲーム';
+    ng.onclick = () => { sound.play('nav'); clearSave(); state.hp = 5; state.node = 'start'; save(); render(); };
+    choices.appendChild(ng);
     const b = document.createElement('button');
     b.className = 'btn';
     b.textContent = 'セーブ消去';
@@ -309,6 +315,8 @@ window.addEventListener('keydown', (e)=>{
   }
   // At title only: 'r' = clear save
   if (k === 'r' && state.node === 'title') { e.preventDefault(); clearSave(); state.hp = 5; state.node = 'title'; render(); return; }
+  // At title only: 'n' = new game (clear + start)
+  if (k === 'n' && state.node === 'title') { e.preventDefault(); clearSave(); state.hp = 5; state.node = 'start'; save(); render(); return; }
 });
 
 window.addEventListener('DOMContentLoaded', () => {
