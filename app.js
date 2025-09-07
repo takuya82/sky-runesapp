@@ -157,8 +157,18 @@ function render(){
   const flowNodes = ['start','enemy1','enemy2','fork','shrine','boss','good_end','bad_end'];
   if (flowNodes.includes(state.node)) {
     const cur = stepIndex(state.node);
-    const labels = ['Start','Gate','Shrine','Boss','End'];
-    const parts = labels.map((lb,i)=> i<cur?`<span class="crumb done">${lb}</span>`: i===cur?`<span class="crumb cur">${lb}</span>`:`<span class="crumb">${lb}</span>`);
+    const crumbs = [
+      { label: 'Start',  tip: '道中：start / enemy1 / enemy2' },
+      { label: 'Gate',   tip: '祠の門：fork' },
+      { label: 'Shrine', tip: '試練：shrine' },
+      { label: 'Boss',   tip: '小ボス：boss' },
+      { label: 'End',    tip: '結果：good_end / bad_end' },
+    ];
+    const parts = crumbs.map((c,i)=>{
+      const cls = i<cur? 'crumb done' : (i===cur? 'crumb cur' : 'crumb');
+      const tip = c.tip.replace(/"/g,'&quot;');
+      return `<span class="${cls}" title="${tip}" aria-label="${tip}">${c.label}</span>`;
+    });
     scene.insertAdjacentHTML('beforeend', `<div class="crumbs">${parts.join(' <span class="sep">→</span> ')}</div>`);
     // scene artwork
     const artSrc = ART[state.node] || null;
