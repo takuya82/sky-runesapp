@@ -60,7 +60,18 @@ const STORY = {
       bank: { use: ['grammar_basic'] },
       next: { ok:"fork", ng:"fork" } },
     fork: { title: "Shrine Gate", text: "祠の入り口。ミニボス前に謎を解け。", choices: [
-      { label: "祠に入る", to: "shrine" }, { label: "引き返す", to: "start" }
+      { label: "祠に入る", to: "shrine", require: { flags:['gateKey'] }, locked: '扉は固く閉ざされている。風の鍵が必要だ。' },
+      { label: "鍵を探す", to: "ruins" },
+      { label: "引き返す", to: "start" }
+    ] },
+    // Small side story to obtain a key
+    ruins: { title: "Old Ruins", type: 'seq', steps: [
+      '門の脇に、古びた祠への小道が延びている。',
+      '蔦をかき分けると、石碑に風のルーンが刻まれていた。',
+      'あなたが手を触れると、淡い光が走る――',
+    ], next: 'ruins_key' },
+    ruins_key: { title: "Wind Key", text: "〈風の鍵〉を手に入れた。祠の門で使えそうだ。", actions:[{ set:{ flag:'gateKey', value:true } }], choices:[
+      { label: '門へ戻る', to: 'fork' }
     ] },
     shrine: { title: "Shrine Puzzle", text: "正解で通過。失敗するとHP-1で再挑戦。", type: "quiz",
       bank: { use: ['connector_reason','grammar_basic','grammar_tense'] },
@@ -79,14 +90,28 @@ const state = {
   node: 'title',
   data: STORY,
   intro: {},
+  flags: (()=>{ try { return JSON.parse(localStorage.getItem('flags')||'{}'); } catch { return {}; } })(),
+  visited: {},
+  lastNode: null,
+  seq: {},
   session: null, // quiz session state
 };
 
 const $ = (s) => document.querySelector(s);
 const scene = $('#scene'), dialog = $('#dialog'), choices = $('#choices'), status = $('#status');
 
-function save(){ localStorage.setItem('hp', state.hp); localStorage.setItem('node', state.node); }
-function clearSave(){ try { localStorage.removeItem('hp'); localStorage.removeItem('node'); } catch {} }
+function save(){
+  localStorage.setItem('hp', state.hp);
+  localStorage.setItem('node', state.node);
+  try { localStorage.setItem('flags', JSON.stringify(state.flags||{})); } catch {}
+}
+function clearSave(){
+  try { localStorage.removeItem('hp'); localStorage.removeItem('node'); localStorage.removeItem('flags'); } catch {}
+}
+
+// flags helpers
+function setFlag(k,v=true){ state.flags[k]=!!v; save(); }
+function hasFlag(k){ return !!state.flags[k]; }
 
 // ---------------- Sound (WebAudio, tiny beeps) ----------------
 const sound = {
@@ -137,6 +162,8 @@ const ART = {
   enemy2: 'image/image/wisp.jpeg',            // wisp
   // Gate / Shrine / Boss
   fork: 'image/image/tsuta.jpeg',             // ivy/gate atmosphere
+  ruins: 'image/image/tsuta.jpeg',
+  ruins_key: 'image/image/syujinkou.jpg',
   shrine: 'image/image/syujinkou.jpg',        // protagonist at shrine
   boss: 'image/image/iwagolem.jpeg',          // stone golem boss
   // Endings
@@ -196,6 +223,17 @@ function pushRecent(id, asked, poolLen){
 
 function render(){
   const n = state.data.nodes[state.node];
+  // run onEnter actions once per visit
+  if (n && !state.visited[state.node] && n.actions) {
+    try {
+      n.actions.forEach(act=>{
+        if (!act) return;
+        if (act.set) setFlag(act.set.flag, act.set.value!==false);
+        if (act.hp) { state.hp = Math.max(0, state.hp + (Number(act.hp.add)||0)); }
+      });
+    } catch {}
+  }
+  state.visited[state.node] = true;
   // header + progress
   scene.innerHTML = `<span class="badge">Scene: ${n.title}</span>`;
   const flowNodes = ['start','enemy1','enemy2','fork','shrine','boss','good_end','bad_end'];
@@ -288,6 +326,7 @@ function render(){
   }
 
   // body
+  if (n && n.type === 'seq') return renderSeq(n);
   if (n && n.html) dialog.innerHTML = n.html; else dialog.textContent = n?.text || '';
   // status (numeric + hearts up to 5)
   try {
@@ -321,7 +360,13 @@ function render(){
   (n?.choices || []).forEach(c => {
     const b = document.createElement('button');
     b.textContent = c.label;
-    b.onclick = () => { sound.play('nav'); state.node = c.to; save(); render(); };
+    const gate = checkRequire(c.require);
+    if (!gate.ok) {
+      b.disabled = true;
+      b.title = c.locked || gate.why || '';
+    } else {
+      b.onclick = () => { sound.play('nav'); state.node = c.to; save(); render(); };
+    }
     choices.appendChild(b);
   });
 
@@ -374,6 +419,23 @@ function render(){
   // focus first actionable button for accessibility
   const firstBtn = choices.querySelector('button');
   if (firstBtn) try { firstBtn.focus({ preventScroll: true }); } catch {}
+}
+
+function renderSeq(n){
+  const id = state.node;
+  const steps = n.steps || [];
+  const idx = state.seq[id] ?? 0;
+  const step = steps[idx] || '';
+  dialog.innerHTML = Array.isArray(step) ? step.join('<br>') : step;
+  choices.innerHTML = '';
+  const more = document.createElement('button');
+  more.className = 'btn btn-primary';
+  more.textContent = (idx < steps.length-1) ? '続ける' : (n.finalLabel || '進む');
+  more.onclick = ()=>{
+    if (idx < steps.length-1) { state.seq[id] = idx+1; render(); }
+    else { state.seq[id] = 0; state.node = n.next || 'title'; save(); render(); }
+  };
+  choices.appendChild(more);
 }
 
 function selectFromBank(nodeId, n){
@@ -518,3 +580,14 @@ window.addEventListener('DOMContentLoaded', () => {
   } catch {}
   render();
 });
+// Choice requirement check
+function checkRequire(req){
+  if (!req) return { ok:true };
+  if (req.minHp!=null && state.hp < req.minHp) return { ok:false, why:`HPが足りない（必要:${req.minHp}）` };
+  if (req.maxHp!=null && state.hp > req.maxHp) return { ok:false, why:`HPが高すぎる（上限:${req.maxHp}）` };
+  const need = req.flags||req.require||[];
+  for (const f of need) if (!hasFlag(f)) return { ok:false, why:`${f} が必要` };
+  const forbid = req.forbid||[];
+  for (const f of forbid) if (hasFlag(f)) return { ok:false, why:`${f} を所持中は進めない` };
+  return { ok:true };
+}

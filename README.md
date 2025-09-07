@@ -46,3 +46,7 @@ Question bank
 Deploy (Vercel)
 - Import this repo on Vercel as a static site (no build command).
 - Output directory: repo root (contains `index.html`).
+- Story extensions
+- Flags: set on node entry via `actions: [{ set: { flag:'gateKey', value:true } }]`
+- Requirements: gate a choice via `require: { flags:['gateKey'] }` with fallback message `locked: '...'`
+- Sequences: `type:'seq'` + `steps:[...]` + `next:'nodeId'` for簡易ノベル演出
