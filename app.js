@@ -90,7 +90,7 @@ const STORY = {
     boss: { title: "Mini Boss", text: "最後の勝負。正解で突破、ミスでHP-1。", type: "quiz",
       bank: { use: ['exam_hard'] },
       next: { ok:"good_end", ng:"bad_end" } },
-    good_end: { title: "Clear!", text: "勇気の欠片が光り、風が安定した。祠は静けさを取り戻す。次章で残る欠片を探そう。" },
+    good_end: { title: "Clear!", text: "勇気の欠片が光り、風が安定した。祠は静けさを取り戻す。次章で残る欠片を探そう。", actions:[{ set:{ flag:'ch1_clear', value:true } }] },
     bad_end: { title: "Game Over", text: "力尽きた… 島の風はまだ不安定だ。準備を整えて、もう一度挑戦しよう。" },
     
     // ---------- Chapter 2 (Skeleton) ----------
@@ -153,7 +153,7 @@ const STORY = {
       '『問おう。風はどこから来て、どこへ還る？』',
     ], next:'c2_boss' },
     c2_boss: { title: "Mist Guardian", text: "守護者の問い。", type:'quiz', bank:{ use:['exam_hard'] }, next:{ ok:'c2_good_end', ng:'c2_bad_end' } },
-    c2_good_end: { title: "Chapter 2 Clear (Template)", text: "霧が晴れ、遠くに光の筋が見えた。第3章へ続く。", choices:[ { label:'タイトルへ', to:'title' } ] },
+    c2_good_end: { title: "Chapter 2 Clear (Template)", text: "霧が晴れ、遠くに光の筋が見えた。第3章へ続く。", actions:[{ set:{ flag:'ch2_clear', value:true } }], choices:[ { label:'タイトルへ', to:'title' } ] },
     c2_bad_end: { title: "Chapter 2 Failed (Template)", text: "霧に迷い込んだ…体勢を立て直そう。", choices:[ { label:'第2章タイトル', to:'c2_title' } ] },
 
     // ---------- Chapter 3 (Skeleton) ----------
@@ -192,7 +192,7 @@ const STORY = {
       '『道は一つではない。では、今はどの道を選ぶ？』',
     ], next:'c3_boss' },
     c3_boss: { title:'Vine Warden', text:'守護の問い。', type:'quiz', bank:{ use:['exam_hard'] }, next:{ ok:'c3_good_end', ng:'c3_bad_end' } },
-    c3_good_end: { title:'Chapter 3 Clear (Template)', text:'蔦の迷いはほどけ、南縁に静かな風が戻った。', choices:[ { label:'タイトルへ', to:'title' } ] },
+    c3_good_end: { title:'Chapter 3 Clear (Template)', text:'蔦の迷いはほどけ、南縁に静かな風が戻った。', actions:[{ set:{ flag:'ch3_clear', value:true } }], choices:[ { label:'タイトルへ', to:'title' } ] },
     c3_bad_end: { title:'Chapter 3 Failed (Template)', text:'蔦のざわめきに呑まれた…もう一度挑もう。', choices:[ { label:'第3章タイトル', to:'c3_title' } ] },
   }
 };
@@ -616,6 +616,34 @@ function render(){
     b.textContent = 'セーブ消去';
     b.onclick = () => { clearSave(); state.hp = 5; state.node = 'title'; render(); };
     choices.appendChild(b);
+
+    // chapter select tiles
+    try {
+      const wrap = document.createElement('div');
+      wrap.className = 'card';
+      const h = document.createElement('div');
+      h.className = 'muted';
+      h.textContent = '章選択';
+      wrap.appendChild(h);
+      const grid = document.createElement('div');
+      grid.className = 'grid';
+      function tile(label, to, img, badge){
+        const t = document.createElement('div');
+        t.className = 'tile';
+        const im = document.createElement('img'); im.src = img; im.alt = label; t.appendChild(im);
+        const cap = document.createElement('div'); cap.className = 'cap'; cap.textContent = label + (badge? ` ／ ${badge}`: ''); t.appendChild(cap);
+        t.onclick = ()=>{ sound.play('nav'); state.node = to; render(); };
+        return t;
+      }
+      const b1 = hasFlag('ch1_clear')? 'Clear' : '';
+      const b2 = hasFlag('ch2_clear')? 'Clear' : '';
+      const b3 = hasFlag('ch3_clear')? 'Clear' : '';
+      grid.appendChild(tile('第1章', 'start', ART.start || ART.title, b1));
+      grid.appendChild(tile('第2章', 'c2_title', ART.c2_title || ART.title, b2));
+      grid.appendChild(tile('第3章', 'c3_title', ART.c3_title || ART.title, b3));
+      wrap.appendChild(grid);
+      dialog.appendChild(wrap);
+    } catch {}
   }
 
   // endings: add back-to-title button
