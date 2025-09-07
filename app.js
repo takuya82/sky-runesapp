@@ -284,7 +284,16 @@ function renderQuiz(n){
     b.textContent = opt;
     b.onclick = () => {
       const ok = (opt === q.a);
-      if (!ok) state.hp -= 1;
+      if (!ok) {
+        state.hp -= 1;
+        try {
+          // brief damage flash on screen
+          document.body.classList.remove('hurt');
+          void document.body.offsetWidth; // reflow to restart animation
+          document.body.classList.add('hurt');
+          setTimeout(()=>{ document.body.classList.remove('hurt'); }, 320);
+        } catch {}
+      }
       sound.play(ok? 'ok' : 'ng');
       state.node = (state.hp <= 0) ? 'bad_end' : (ok ? n.next.ok : n.next.ng);
       save(); render();

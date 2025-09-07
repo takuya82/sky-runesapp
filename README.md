@@ -18,7 +18,8 @@ Dev
 Usage tips
 - Keyboard: `1-4` selects choices; `m` toggles sound.
 - At Title: `c` continues if a save exists; `r` clears save; `n` starts a new game (clear + start).
- - UI: HP shows as a number and hearts (♥ up to 5).
+- UI: HP shows as a number and hearts (♥ up to 5).
+ - Feedback: Wrong answers briefly flash a red tint (damage cue).
 
 Deploy (Vercel)
 - Import this repo on Vercel as a static site (no build command).
