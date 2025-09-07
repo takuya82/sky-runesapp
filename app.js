@@ -189,8 +189,15 @@ function render(){
 
   // body
   if (n && n.html) dialog.innerHTML = n.html; else dialog.textContent = n?.text || '';
-  // status
-  status.innerHTML = `<span class="badge">HP:${state.hp}</span>`;
+  // status (numeric + hearts up to 5)
+  try {
+    const maxHp = 5;
+    const hp = Math.max(0, Math.min(maxHp, Number(state.hp)||0));
+    const hearts = '♥'.repeat(hp) + '♡'.repeat(Math.max(0, maxHp - hp));
+    status.innerHTML = `<span class="badge">HP:${state.hp}</span> <span class="hearts" aria-hidden="true">${hearts}</span>`;
+  } catch {
+    status.innerHTML = `<span class="badge">HP:${state.hp}</span>`;
+  }
 
   // intro gate: once per session for key nodes
   const __introTargets = { start:1, fork:1, shrine:1, boss:1 };
