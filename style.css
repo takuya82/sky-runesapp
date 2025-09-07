@@ -50,6 +50,8 @@ main#game { max-width: 720px; margin: 0 auto; }
 main#game section { margin: 12px 0; padding: 12px; border: 1px solid var(--border); border-radius: 10px; background: color-mix(in oklab, var(--card) 90%, black); backdrop-filter: blur(2px); }
 .badge { display: inline-block; padding: 2px 8px; border-radius: 999px; background: #0b1220; border: 1px solid var(--border); color: var(--fg); font-size: 12px; }
 #choices button { margin: 4px 8px 0 0; }
+.choice-ok { background: #065f46 !important; border-color: #065f46 !important; color: #d1fae5 !important; }
+.choice-ng { background: #7f1d1d !important; border-color: #991b1b !important; color: #fee2e2 !important; }
 .muted { letter-spacing: .01em; }
 #dialog { max-width: 52ch; }
 #dialog p { margin: .5rem 0; }

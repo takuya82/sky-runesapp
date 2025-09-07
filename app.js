@@ -305,8 +305,14 @@ function renderQuiz(n){
         } catch {}
       }
       sound.play(ok? 'ok' : 'ng');
-      state.node = (state.hp <= 0) ? 'bad_end' : (ok ? n.next.ok : n.next.ng);
-      save(); render();
+      // visual feedback on the selected button and lock inputs
+      try {
+        const btns = Array.from(choices.querySelectorAll('button'));
+        btns.forEach(x => x.disabled = true);
+        b.classList.add(ok ? 'choice-ok' : 'choice-ng');
+      } catch {}
+      const nextNode = (state.hp <= 0) ? 'bad_end' : (ok ? n.next.ok : n.next.ng);
+      setTimeout(() => { state.node = nextNode; save(); render(); }, ok ? 180 : 320);
     };
     choices.appendChild(b);
   });
