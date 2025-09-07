@@ -54,7 +54,9 @@ Visual mapping (images)
 Deploy (Vercel)
 - Import this repo on Vercel as a static site (no build command).
 - Output directory: repo root (contains `index.html`).
-- Story extensions
+
+Story extensions
 - Flags: set on node entry via `actions: [{ set: { flag:'gateKey', value:true } }]`
 - Requirements: gate a choice via `require: { flags:['gateKey'] }` with fallback message `locked: '...'`
 - Sequences: `type:'seq'` + `steps:[...]` + `next:'nodeId'` for簡易ノベル演出
+- Chapters: Title shows chapter tiles (1–3) and an Epilogue tile. Epilogue unlocks after clearing 1–3 (`ch1_clear/ch2_clear/ch3_clear`).

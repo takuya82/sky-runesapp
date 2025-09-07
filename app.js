@@ -21,6 +21,7 @@ const STORY = {
         { label: "章の流れ", to: "map" },
         { label: "第2章（準備中）", to: "c2_title" },
         { label: "第3章（準備中）", to: "c3_title" },
+        { label: "エピローグ", to: "epi_title" },
       ],
     },
     howto: {
@@ -194,6 +195,32 @@ const STORY = {
     c3_boss: { title:'Vine Warden', text:'守護の問い。', type:'quiz', bank:{ use:['exam_hard'] }, next:{ ok:'c3_good_end', ng:'c3_bad_end' } },
     c3_good_end: { title:'Chapter 3 Clear (Template)', text:'蔦の迷いはほどけ、南縁に静かな風が戻った。', actions:[{ set:{ flag:'ch3_clear', value:true } }], choices:[ { label:'タイトルへ', to:'title' } ] },
     c3_bad_end: { title:'Chapter 3 Failed (Template)', text:'蔦のざわめきに呑まれた…もう一度挑もう。', choices:[ { label:'第3章タイトル', to:'c3_title' } ] },
+
+    // ---------- Epilogue (Unlocked after clearing Chapters 1–3) ----------
+    epi_title: {
+      title: 'Sky Runes - Epilogue',
+      html: [
+        '<div class="hero"><h1 class="logo-main">sky runes</h1><div class="logo-sub">（風の還るところ）</div></div>',
+        '欠片は集い、風は輪を描いた。',
+        '旅路の友もまた、風の縁に立っている。',
+        '<hr>',
+        'エピローグは第1〜第3章をクリアすると解放されます。',
+      ].join('<br>'),
+      choices: [
+        { label:'はじめる', to:'epi_intro' },
+        { label:'タイトルへ', to:'title' },
+      ]
+    },
+    epi_intro: { title:'Epilogue', type:'seq', steps:[
+      '風の祠。静かな光があなたと仲間を包む。',
+      '妖精は微笑み、魔導士は灯を掲げた。',
+      '『巡りは戻り、また新しい路が開く』',
+    ], next:'epi_final' },
+    epi_final: { title:'The End', type:'seq', steps:[
+      'どこから来て、どこへ還るのか――',
+      '風は、あなたの選んだ言葉の軌跡を覚えている。',
+      'そして、また旅がはじまる。',
+    ], next:'title', finalLabel:'タイトルへ' },
   }
 };
 
@@ -325,6 +352,10 @@ const ART = {
   c3_boss: 'image/image/tsuta.jpeg',
   c3_good_end: 'image/image/Generated-Image-September-06,-2025---5_17PM.jpeg',
   c3_bad_end: 'image/image/Generated-Image-September-06,-2025---5_17PM.jpeg',
+  // Epilogue
+  epi_title: 'image/image/Generated-Image-September-06,-2025---5_17PM.jpeg',
+  epi_intro: 'image/image/Generated-Image-September-06,-2025---5_17PM.jpeg',
+  epi_final: 'image/image/Generated-Image-September-06,-2025---5_17PM.jpeg',
 };
 
 // Short flavor lines for each scene
@@ -627,12 +658,17 @@ function render(){
       wrap.appendChild(h);
       const grid = document.createElement('div');
       grid.className = 'grid';
-      function tile(label, to, img, badge){
+      function tile(label, to, img, badge, enabled=true){
         const t = document.createElement('div');
         t.className = 'tile';
         const im = document.createElement('img'); im.src = img; im.alt = label; t.appendChild(im);
         const cap = document.createElement('div'); cap.className = 'cap'; cap.textContent = label + (badge? ` ／ ${badge}`: ''); t.appendChild(cap);
-        t.onclick = ()=>{ sound.play('nav'); state.node = to; render(); };
+        if (enabled) {
+          t.onclick = ()=>{ sound.play('nav'); state.node = to; render(); };
+          t.style.cursor = 'pointer';
+        } else {
+          t.style.opacity = 0.6; t.style.filter = 'grayscale(0.2)';
+        }
         return t;
       }
       const b1 = hasFlag('ch1_clear')? 'Clear' : '';
@@ -641,6 +677,8 @@ function render(){
       grid.appendChild(tile('第1章', 'start', ART.start || ART.title, b1));
       grid.appendChild(tile('第2章', 'c2_title', ART.c2_title || ART.title, b2));
       grid.appendChild(tile('第3章', 'c3_title', ART.c3_title || ART.title, b3));
+      const allClear = hasFlag('ch1_clear') && hasFlag('ch2_clear') && hasFlag('ch3_clear');
+      grid.appendChild(tile('エピローグ', 'epi_title', ART.epi_title || ART.title, allClear? 'Unlocked' : 'Locked', allClear));
       wrap.appendChild(grid);
       dialog.appendChild(wrap);
     } catch {}
