@@ -187,7 +187,23 @@ function render(){
       img.alt = stepLabel(state.node);
       try { img.loading = 'lazy'; img.decoding = 'async'; } catch {}
       img.src = artSrc;
+      // apply saved fit preference
+      try { if ((localStorage.getItem('artfit')||'contain') === 'cover') img.classList.add('cover'); } catch {}
       fig.appendChild(img);
+      // small control to toggle fit
+      const ctrl = document.createElement('div');
+      ctrl.className = 'art-controls';
+      const btn = document.createElement('button');
+      btn.className = 'btn';
+      const updateLabel = ()=>{ btn.textContent = `画像表示: ${img.classList.contains('cover')? '拡大（トリミング）':'全体（レターボックス）'}`; };
+      updateLabel();
+      btn.onclick = () => {
+        img.classList.toggle('cover');
+        try { localStorage.setItem('artfit', img.classList.contains('cover')? 'cover':'contain'); } catch {}
+        updateLabel();
+      };
+      ctrl.appendChild(btn);
+      fig.appendChild(ctrl);
       scene.appendChild(fig);
     }
     // flavor line
@@ -207,13 +223,27 @@ function render(){
     if (old) old.remove();
     if (artSrc) {
       const fig = document.createElement('figure');
-      fig.className = 'illust';
+      fig.className = 'illust title';
       const img = document.createElement('img');
       img.id = 'artimg';
       img.alt = 'Title';
       try { img.loading = 'lazy'; img.decoding = 'async'; } catch {}
       img.src = artSrc;
+      try { if ((localStorage.getItem('artfit')||'contain') === 'cover') img.classList.add('cover'); } catch {}
       fig.appendChild(img);
+      const ctrl = document.createElement('div');
+      ctrl.className = 'art-controls';
+      const btn = document.createElement('button');
+      btn.className = 'btn';
+      const updateLabel = ()=>{ btn.textContent = `画像表示: ${img.classList.contains('cover')? '拡大（トリミング）':'全体（レターボックス）'}`; };
+      updateLabel();
+      btn.onclick = () => {
+        img.classList.toggle('cover');
+        try { localStorage.setItem('artfit', img.classList.contains('cover')? 'cover':'contain'); } catch {}
+        updateLabel();
+      };
+      ctrl.appendChild(btn);
+      fig.appendChild(ctrl);
       scene.appendChild(fig);
     }
   }
