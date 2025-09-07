@@ -128,6 +128,7 @@ function stepLabel(id){
 
 // Artwork mapping per node (optional)
 const ART = {
+  title: 'image/image/Generated Image September 06, 2025 - 5_17PM.jpeg',
   start: 'image/image/Generated Image September 06, 2025 - 5_17PM.jpeg',
   enemy1: 'image/stone-stair-snake_idle_v2.jpeg',
   enemy2: 'image/stone-block-golem_idle_v2.jpeg',
@@ -170,7 +171,7 @@ function render(){
       return `<span class="${cls}" title="${tip}" aria-label="${tip}">${c.label}</span>`;
     });
     scene.insertAdjacentHTML('beforeend', `<div class="crumbs">${parts.join(' <span class="sep">→</span> ')}</div>`);
-    // scene artwork
+    // scene artwork (flow nodes)
     const artSrc = ART[state.node] || null;
     const old = scene.querySelector('.illust');
     if (old) old.remove();
@@ -194,6 +195,22 @@ function render(){
       p.className = 'flavor';
       p.textContent = fl;
       scene.appendChild(p);
+    }
+  } else if (state.node === 'title') {
+    // title artwork (no crumbs on title)
+    const artSrc = ART.title || ART[state.node] || null;
+    const old = scene.querySelector('.illust');
+    if (old) old.remove();
+    if (artSrc) {
+      const fig = document.createElement('figure');
+      fig.className = 'illust';
+      const img = document.createElement('img');
+      img.id = 'artimg';
+      img.alt = 'Title';
+      try { img.loading = 'lazy'; img.decoding = 'async'; } catch {}
+      img.src = artSrc;
+      fig.appendChild(img);
+      scene.appendChild(fig);
     }
   }
 
