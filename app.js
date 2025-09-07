@@ -232,27 +232,27 @@ function stepLabel(id){
 const ART = {
   // Opening / key visual
   title: 'image/image/Generated-Image-September-06,-2025---5_17PM.jpeg',
-  start: 'image/image/Generated-Image-September-06,-2025---5_17PM.jpeg',
+  start: 'image/image/Generated-Image-September-06,-2025---5_38PM.jpeg',
   // Enemies
   enemy1: 'image/image/fuwakumo-slaim.jpeg', // fluffy cloud slime
   enemy2: 'image/image/wisp.jpeg',            // wisp
   // Gate / Shrine / Boss
-  fork: 'image/image/tsuta.jpeg',             // ivy/gate atmosphere
+  fork: 'image/image/Generated-Image-September-06,-2025---5_39PM.jpeg',
   ruins: 'image/image/tsuta.jpeg',
   ruins_key: 'image/image/syujinkou.jpg',
   meet_fairy: 'image/image/wisp.jpeg',
   meet_fairy_join: 'image/image/wisp.jpeg',
   shrine: 'image/image/syujinkou.jpg',        // protagonist at shrine
-  boss: 'image/image/iwagolem.jpeg',          // stone golem boss
+  boss: 'image/image/stone-stair-snake_idle_v2.jpeg',          // boss (snake)
   // Endings
   good_end: 'image/image/Generated-Image-September-06,-2025---5_17PM.jpeg',
   bad_end:  'image/image/Generated-Image-September-06,-2025---5_17PM.jpeg',
   // Chapter 2
   c2_title: 'image/image/Generated-Image-September-06,-2025---5_17PM.jpeg',
-  c2_start: 'image/image/Generated-Image-September-06,-2025---5_17PM.jpeg',
+  c2_start: 'image/image/Generated-Image-September-06,-2025---5_38PM.jpeg',
   c2_enemy1: 'image/image/wisp.jpeg',
   c2_enemy2: 'image/image/stone-block-golem_idle_v2.jpeg',
-  c2_fork: 'image/image/tsuta.jpeg',
+  c2_fork: 'image/image/Generated-Image-September-06,-2025---5_39PM.jpeg',
   c2_shrine: 'image/image/syujinkou.jpg',
   c2_boss: 'image/image/iwagolem.jpeg',
   c2_good_end: 'image/image/Generated-Image-September-06,-2025---5_17PM.jpeg',

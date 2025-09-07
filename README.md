@@ -43,6 +43,13 @@ Question bank
   - shrine: `connector_reason`, `grammar_basic`, `grammar_tense`
 - To add: append items to categories or create new category, then list it in a node’s `bank.use` array in `app.js`.
 
+Visual mapping (images)
+- Key visual: `image/image/Generated-Image-September-06,-2025---5_17PM.jpeg` (title, endings, chapter title/prologue)
+- Path scenes: `...5_38PM` and `...5_39PM` (start/fork and c2_start/c2_fork)
+- Party (protagonist/companions): `image/image/party/` (e.g., `syujinkou.jpg`)
+- Companions: Fairy=`wisp.jpeg`, Mage=`humingbard.jpeg`
+- Bosses: Chapter1=`stone-stair-snake_idle_v2.jpeg`, Chapter2=`iwagolem.jpeg`（`tsuta.jpeg` は今後のボス予定）
+
 Deploy (Vercel)
 - Import this repo on Vercel as a static site (no build command).
 - Output directory: repo root (contains `index.html`).
