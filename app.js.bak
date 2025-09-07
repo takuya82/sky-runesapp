@@ -1,0 +1,155 @@
+﻿// ====== story data (inline) ======
+const STORY = {
+  "nodes": {
+    // 霑ｽ蜉・壹が繝ｼ繝励ル繝ｳ繧ｰ・・桃菴懆ｪｬ譏・    "intro": {
+      "title": "Sky Runes 窶・蠎冗ｫ",
+      "text": "遨ｺ縺ｫ豬ｮ縺九・蟲ｶ縲・・縲医せ繧ｫ繧､繝ｫ繝ｼ繝ｳ縲峨・蜉帙〒遨ｺ縺ｫ逡吶∪縺｣縺ｦ縺・ｋ縲ゅ□縺悟窮豌励・繝ｫ繝ｼ繝ｳ縺梧ｬ縺代∝ｳｶ縺ｯ繧・▲縺上ｊ鬮伜ｺｦ繧貞､ｱ縺｣縺ｦ縺・◆縲りｦ狗ｿ偵＞謗｢邏｢閠・・縺ゅ↑縺溘・縲∫･縲碁｢ｨ縺ｮ髢薙阪〒谺迚・ｒ蜿悶ｊ謌ｻ縺吩ｻｻ蜍吶ｒ蜿励￠繧九・,
+      "choices": [
+        {"label": "蜀帝匱繧貞ｧ九ａ繧・, "to": "start"},
+        {"label": "謫堺ｽ懆ｪｬ譏弱ｒ隱ｭ繧", "to": "howto"}
+      ]
+    },
+    "howto": {
+      "title": "謫堺ｽ懆ｪｬ譏・,
+      "text": "繝ｻ蝗帶萱繧ｯ繧､繧ｺ・壽ｭ｣隗｣縺ｧ蜑埼ｲ縲∬ｪ､遲斐〒HP縺・貂帛ｰ托ｼ・縺ｧ繧ｲ繝ｼ繝繧ｪ繝ｼ繝舌・・峨・n繝ｻ驕ｸ謚櫁い縺ｧ繝ｫ繝ｼ繝亥・蟯舌・n繝ｻ騾ｲ陦檎憾豕√→HP縺ｯ閾ｪ蜍穂ｿ晏ｭ假ｼ・ocalStorage・峨・n繝ｻ繧・ｊ逶ｴ縺励・縲梧怙蛻昴°繧峨阪・繧ｿ繝ｳ縲・,
+      "choices": [
+        {"label": "謌ｻ繧・, "to": "intro"}
+      ]
+    },
+
+    // 譛ｬ邱ｨ・域怙蟆舟VP・・    "start": {
+      "title": "Skyfield",
+      "text": "豬ｮ蟲ｶ縺ｮ逾縺ｸ蜷代°縺・る％荳ｭ縺ｫ謨ｵ縺後＞繧九・,
+      "choices": [
+        {"label": "蛹励・驕薙∈", "to": "enemy1"},
+        {"label": "譚ｱ縺ｮ隹ｷ縺ｸ", "to": "enemy2"}
+      ]
+    },
+    "enemy1": {
+      "title": "Slime A",
+      "text": "闍ｱ蜊倩ｪ槭〒謾ｻ謦・ｼ∵ｭ｣隗｣縺ｧ繝繝｡繝ｼ繧ｸ縲√Α繧ｹ縺ｧHP-1縲・,
+      "type": "quiz",
+      "quiz": [
+        {"q":"book 縺ｮ諢丞袖縺ｯ・・,"options":["譛ｬ","迥ｬ","蟾・,"邂ｱ"],"a":"譛ｬ"},
+        {"q":"run 縺ｮ驕主悉蠖｢縺ｯ・・,"options":["ran","runed","runned","run"],"a":"ran"}
+      ],
+      "next": {"ok":"fork", "ng":"fork"}
+    },
+    "enemy2": {
+      "title": "Slime B",
+      "text": "蝓ｺ遉取枚豕輔け繧､繧ｺ縲・,
+      "type": "quiz",
+      "quiz": [
+        {"q":"I ___ a student.","options":["am","is","are","be"],"a":"am"},
+        {"q":"She ___ tennis.","options":["plays","play","played・井ｻ奇ｼ・,"to play"],"a":"plays"}
+      ],
+      "next": {"ok":"fork", "ng":"fork"}
+    },
+    "fork": {
+      "title": "Shrine Gate",
+      "text": "逾縺ｮ蜈･繧雁哨縲ゅΑ繝九・繧ｹ蜑阪↓隰弱ｒ隗｣縺托ｼ・/3豁｣隗｣縺ｧ騾夐℃・峨・,
+      "choices": [
+        {"label": "逾縺ｫ蜈･繧・, "to": "shrine"},
+        {"label": "蠑輔″霑斐☆", "to": "start"}
+      ]
+    },
+    "shrine": {
+      "title": "Shrine Puzzle",
+      "text": "3蝠丈ｸｭ2蝠乗ｭ｣隗｣縺ｧ騾夐℃縲ょ､ｱ謨励☆繧九→HP-1縺ｧ蜀肴倦謌ｦ縲・,
+      "type": "quiz",
+      "quiz": [
+        {"q":"because 縺ｮ諢丞袖縺ｯ・・,"options":["縺ｪ縺懊↑繧・,"縺励°縺・,"縺昴ｌ繧・∴","縺昴ｌ縺ｫ繧ゅ°縺九ｏ繧峨★"],"a":"縺ｪ縺懊↑繧・},
+        {"q":"much 縺ｮ豈碑ｼ・ｴ壹・・・,"options":["more","most","many","more than"],"a":"more"},
+        {"q":"There ___ a pen on the desk.","options":["is","are","be","was"],"a":"is"}
+      ],
+      "next": {"ok":"boss", "ng":"shrine"}
+    },
+    "boss": {
+      "title": "Mini Boss",
+      "text": "譛蠕後・荳蝠擾ｼ・,
+      "type": "quiz",
+      "quiz": [
+        {"q":"縲悟ｽｼ縺ｯ譏ｨ譌･縺薙％縺ｫ譚･縺溘阪ｒ闍ｱ險ｳ縺帙ｈ縲・,"options":["He came here yesterday.","He comes here yesterday.","He is here yesterday.","He was come here yesterday."],"a":"He came here yesterday."}
+      ],
+      "next": {"ok":"good_end", "ng":"bad_end"}
+    },
+
+    // 繧ｨ繝ｳ繝・ぅ繝ｳ繧ｰ・域枚繧偵ｏ縺九ｊ繧・☆縺擾ｼ・    "good_end": {
+      "title":"蜍・ｰ励・谺迚・ｒ蜿悶ｊ謌ｻ縺励◆",
+      "text":"逾縺ｮ荳ｭ蠢・〒谺迚・′蜈峨ｊ縲∝ｳｶ縺ｮ鬚ｨ縺悟ｮ牙ｮ壹＠縺溘・hapter 2縺ｸ騾ｲ繧ゅ≧縲・
+    },
+    "bad_end": {
+      "title":"蜉帛ｰｽ縺阪◆",
+      "text":"蟲ｶ縺ｮ鬮伜ｺｦ縺後＆繧峨↓荳九′縺｣縺ｦ縺励∪縺｣縺溪ｦ窶ｦ繧ゅ≧荳蠎ｦ謖第姶縺励ｈ縺・・
+    }
+  }
+};
+
+// ====== game core ======
+const state = {
+  hp: Number(localStorage.getItem("hp")) || 5,
+  node: localStorage.getItem("node") || "intro",   // 竊・蛻晄悄菴咲ｽｮ繧・intro 縺ｫ
+  data: STORY
+};
+
+const $ = s => document.querySelector(s);
+const scene = $("#scene"), dialog = $("#dialog"), choices = $("#choices"), status = $("#status");
+
+function save(){
+  localStorage.setItem("hp", state.hp);
+  localStorage.setItem("node", state.node);
+}
+
+function render(){
+  const n = state.data.nodes[state.node];
+  scene.innerHTML = `<div class="badge">Scene: ${n.title}</div>`;
+  dialog.textContent = n.text;
+  status.innerHTML = `<span class="badge">HP:${state.hp}</span>`;
+  choices.innerHTML = "";
+
+  if(n.type === "quiz"){ return renderQuiz(n); }
+
+  (n.choices||[]).forEach(c=>{
+    const b = document.createElement("button");
+    b.textContent = c.label;
+    b.onclick = ()=>{
+      state.node = c.to;
+      save();
+      render();
+    };
+    choices.appendChild(b);
+  });
+
+  // 邨らｫｯ繝弱・繝臥畑・壹梧怙蛻昴°繧峨阪・繧ｿ繝ｳ
+  if(!n.choices || n.choices.length===0){
+    const b = document.createElement("button");
+    b.textContent = "譛蛻昴°繧・;
+    b.onclick = ()=>{
+      state.node="intro";     // 竊・intro 縺ｫ謌ｻ縺・      state.hp=5;
+      save();
+      render();
+    };
+    choices.appendChild(b);
+  }
+}
+
+function renderQuiz(n){
+  const q = n.quiz[Math.floor(Math.random()*n.quiz.length)];
+  dialog.textContent = q.q;
+
+  q.options.forEach(opt=>{
+    const b = document.createElement("button");
+    b.textContent = opt;
+    b.onclick = ()=>{
+      const ok = (opt === q.a);
+      if(!ok){ state.hp -= 1; }
+      if(state.hp<=0){ state.node="bad_end"; }
+      else { state.node = ok ? n.next.ok : n.next.ng; }
+      save();
+      render();
+    };
+    choices.appendChild(b);
+  });
+}
+
+window.addEventListener("DOMContentLoaded", render);
