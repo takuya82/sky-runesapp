@@ -129,18 +129,18 @@ function stepLabel(id){
 // Artwork mapping per node (optional)
 const ART = {
   // Opening / key visual
-  title: 'image/image/Generated Image September 06, 2025 - 5_17PM.jpeg',
-  start: 'image/image/Generated Image September 06, 2025 - 5_17PM.jpeg',
+  title: 'image/image/Generated-Image-September-06,-2025---5_17PM.jpeg',
+  start: 'image/image/Generated-Image-September-06,-2025---5_17PM.jpeg',
   // Enemies
-  enemy1: 'image/image/fuwa kumo slaim.jpeg', // fluffy cloud slime
+  enemy1: 'image/image/fuwakumo-slaim.jpeg', // fluffy cloud slime
   enemy2: 'image/image/wisp.jpeg',            // wisp
   // Gate / Shrine / Boss
   fork: 'image/image/tsuta.jpeg',             // ivy/gate atmosphere
   shrine: 'image/image/syujinkou.jpg',        // protagonist at shrine
   boss: 'image/image/iwagolem.jpeg',          // stone golem boss
   // Endings
-  good_end: 'image/image/Generated Image September 06, 2025 - 5_17PM.jpeg',
-  bad_end:  'image/image/Generated Image September 06, 2025 - 5_17PM.jpeg',
+  good_end: 'image/image/Generated-Image-September-06,-2025---5_17PM.jpeg',
+  bad_end:  'image/image/Generated-Image-September-06,-2025---5_17PM.jpeg',
 };
 
 // Short flavor lines for each scene
