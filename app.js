@@ -19,6 +19,7 @@ const STORY = {
         { label: "操作説明", to: "howto" },
         { label: "物語の背景", to: "lore" },
         { label: "章の流れ", to: "map" },
+        { label: "第2章（準備中）", to: "c2_title" },
       ],
     },
     howto: {
@@ -81,6 +82,34 @@ const STORY = {
       next: { ok:"good_end", ng:"bad_end" } },
     good_end: { title: "Clear!", text: "勇気の欠片が光り、風が安定した。祠は静けさを取り戻す。次章で残る欠片を探そう。" },
     bad_end: { title: "Game Over", text: "力尽きた… 島の風はまだ不安定だ。準備を整えて、もう一度挑戦しよう。" },
+    
+    // ---------- Chapter 2 (Skeleton) ----------
+    c2_title: {
+      title: "Sky Runes - Chapter 2",
+      html: [
+        '<div class="hero"><h1 class="logo-main">sky runes</h1><div class="logo-sub">（風の行方、遠征編）</div></div>',
+        "祠の静けさの奥で、別の風が目を覚ます。",
+        "あなたは北東の浮島帯〈ミストコースト〉へ向かうことになった。",
+        "<hr>",
+        "第2章はひな型。道中→門→試練→小ボス→結末の流れは同じだが、難度が少し上がる。",
+      ].join('<br>'),
+      choices: [
+        { label: "第2章をはじめる", to: "c2_start" },
+        { label: "タイトルへ", to: "title" },
+      ],
+    },
+    c2_start: { title: "Mist Coast", text: "霧のかかる浮島帯。まずは偵察だ。", choices: [
+      { label: "東へ進む", to: "c2_enemy1" }, { label: "南の断崖へ", to: "c2_enemy2" }
+    ] },
+    c2_enemy1: { title: "Wisp Pack", text: "語彙・時制の確認。", type: 'quiz', bank:{ use:['vocab_basic','grammar_tense'] }, next:{ ok:'c2_fork', ng:'c2_fork' } },
+    c2_enemy2: { title: "Stone Imp", text: "基礎文法の確認。", type: 'quiz', bank:{ use:['grammar_basic'] }, next:{ ok:'c2_fork', ng:'c2_fork' } },
+    c2_fork: { title: "Sea Gate", text: "潮の門。対岸へ渡るには試練を越えよ。", choices:[
+      { label: "試練へ", to: 'c2_shrine' }, { label: "戻る", to: 'c2_start' }
+    ] },
+    c2_shrine: { title: "Mist Trial", text: "接続詞と時制の応用。", type:'quiz', bank:{ use:['connector_reason','grammar_tense'] }, next:{ ok:'c2_boss', ng:'c2_shrine' } },
+    c2_boss: { title: "Mist Guardian", text: "守護者の問い。", type:'quiz', bank:{ use:['exam_hard'] }, next:{ ok:'c2_good_end', ng:'c2_bad_end' } },
+    c2_good_end: { title: "Chapter 2 Clear (Template)", text: "霧が晴れ、遠くに光の筋が見えた。第3章へ続く。", choices:[ { label:'タイトルへ', to:'title' } ] },
+    c2_bad_end: { title: "Chapter 2 Failed (Template)", text: "霧に迷い込んだ…体勢を立て直そう。", choices:[ { label:'第2章タイトル', to:'c2_title' } ] },
   }
 };
 
@@ -137,18 +166,21 @@ const sound = {
   toggle(){ this.enabled = !this.enabled; try { localStorage.setItem('se', this.enabled? '1':'0'); } catch {} }
 };
 
+function normId(id){ return (id||'').replace(/^c2_/, ''); }
 function stepIndex(id){
-  if (id==='start' || id==='enemy1' || id==='enemy2') return 0; // 道中扱い
-  if (id==='fork') return 1;
-  if (id==='shrine') return 2;
-  if (id==='boss') return 3;
+  const x = normId(id);
+  if (x==='start' || x==='enemy1' || x==='enemy2') return 0; // 道中扱い
+  if (x==='fork') return 1;
+  if (x==='shrine') return 2;
+  if (x==='boss') return 3;
   return 4;
 }
 function stepLabel(id){
-  if (id==='start' || id==='enemy1' || id==='enemy2') return 'Start';
-  if (id==='fork') return 'Gate';
-  if (id==='shrine') return 'Shrine';
-  if (id==='boss') return 'Boss';
+  const x = normId(id);
+  if (x==='start' || x==='enemy1' || x==='enemy2') return 'Start';
+  if (x==='fork') return 'Gate';
+  if (x==='shrine') return 'Shrine';
+  if (x==='boss') return 'Boss';
   return 'End';
 }
 
@@ -169,6 +201,16 @@ const ART = {
   // Endings
   good_end: 'image/image/Generated-Image-September-06,-2025---5_17PM.jpeg',
   bad_end:  'image/image/Generated-Image-September-06,-2025---5_17PM.jpeg',
+  // Chapter 2
+  c2_title: 'image/image/Generated-Image-September-06,-2025---5_17PM.jpeg',
+  c2_start: 'image/image/Generated-Image-September-06,-2025---5_17PM.jpeg',
+  c2_enemy1: 'image/image/wisp.jpeg',
+  c2_enemy2: 'image/image/stone-block-golem_idle_v2.jpeg',
+  c2_fork: 'image/image/tsuta.jpeg',
+  c2_shrine: 'image/image/syujinkou.jpg',
+  c2_boss: 'image/image/iwagolem.jpeg',
+  c2_good_end: 'image/image/Generated-Image-September-06,-2025---5_17PM.jpeg',
+  c2_bad_end: 'image/image/Generated-Image-September-06,-2025---5_17PM.jpeg',
 };
 
 // Short flavor lines for each scene
@@ -236,8 +278,9 @@ function render(){
   state.visited[state.node] = true;
   // header + progress
   scene.innerHTML = `<span class="badge">Scene: ${n.title}</span>`;
-  const flowNodes = ['start','enemy1','enemy2','fork','shrine','boss','good_end','bad_end'];
-  if (flowNodes.includes(state.node)) {
+  const flowBase = ['start','enemy1','enemy2','fork','shrine','boss','good_end','bad_end'];
+  const isFlow = (id)=> flowBase.includes(normId(id));
+  if (isFlow(state.node)) {
     const cur = stepIndex(state.node);
     const crumbs = [
       { label: 'Start',  tip: '道中：start / enemy1 / enemy2' },
