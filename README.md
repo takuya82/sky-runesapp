@@ -29,6 +29,14 @@ Quiz sessions
 - Progress shows like: `Q 1/2 • 正解 0/2 (合格: 2)`; pass/fail then routes via node.next.
 - Authoring: optional difficulty `d: 'E'|'M'|'H'` on each question renders a label.
 
+Question bank
+- File: `questions/questions.js` — exposes global `QUESTIONS` (no fetch; works on file:// and Vercel)
+- Categories used by nodes:
+  - enemy1: `vocab_basic`, `grammar_tense`
+  - enemy2: `grammar_basic`
+  - shrine: `connector_reason`, `grammar_basic`, `grammar_tense`
+- To add: append items to categories or create new category, then list it in a node’s `bank.use` array in `app.js`.
+
 Deploy (Vercel)
 - Import this repo on Vercel as a static site (no build command).
 - Output directory: repo root (contains `index.html`).

@@ -53,17 +53,17 @@ const STORY = {
     start: { title: "Skyfield", text: "浮島の祠へ向かう。道中に敵がいる。", choices: [
       { label: "北の道へ", to: "enemy1" }, { label: "東の谷へ", to: "enemy2" }
     ] },
-    enemy1: { title: "Slime A", text: "英単語で攻撃！正解でダメージ、ミスでHP-1。", type: "quiz",
-      quiz: [ { q: "book の意味は？", options:["本","犬","川","箱"], a:"本" }, { q:"run の過去形は？", options:["ran","runed","runned","run"], a:"ran" } ],
+    enemy1: { title: "Slime A", text: "英単語・時制クイズ！正解で前進、ミスでHP-1。", type: "quiz",
+      bank: { use: ['vocab_basic','grammar_tense'] },
       next: { ok:"fork", ng:"fork" } },
     enemy2: { title: "Slime B", text: "基礎文法クイズ。", type: "quiz",
-      quiz: [ { q:"I ___ a student.", options:["am","is","are","be"], a:"am" }, { q:"She ___ tennis.", options:["plays","play","played（今）","to play"], a:"plays" } ],
+      bank: { use: ['grammar_basic'] },
       next: { ok:"fork", ng:"fork" } },
     fork: { title: "Shrine Gate", text: "祠の入り口。ミニボス前に謎を解け。", choices: [
       { label: "祠に入る", to: "shrine" }, { label: "引き返す", to: "start" }
     ] },
     shrine: { title: "Shrine Puzzle", text: "正解で通過。失敗するとHP-1で再挑戦。", type: "quiz",
-      quiz: [ { q:"because の意味は？", options:["なぜなら","しかし","それゆえ","それにもかかわらず"], a:"なぜなら" }, { q:"much の比較級は？", options:["more","most","many","more than"], a:"more" }, { q:"There ___ a pen on the desk.", options:["is","are","be","was"], a:"is" } ],
+      bank: { use: ['connector_reason','grammar_basic','grammar_tense'] },
       next: { ok:"boss", ng:"shrine" } },
     boss: { title: "Mini Boss", text: "最後の一問！", type: "quiz",
       quiz: [ { q:"「彼は昨日ここに来た」を英訳せよ。", options:["He came here yesterday.","He comes here yesterday.","He is here yesterday.","He was come here yesterday."], a:"He came here yesterday." } ],
@@ -352,9 +352,19 @@ function render(){
   if (firstBtn) try { firstBtn.focus({ preventScroll: true }); } catch {}
 }
 
+function selectFromBank(nodeId, n){
+  const B = (window.QUESTIONS && window.QUESTIONS.categories) || {};
+  const wants = (n.bank && n.bank.use) || [];
+  let pool = [];
+  wants.forEach(cat=>{ if (Array.isArray(B[cat])) pool = pool.concat(B[cat]); });
+  // fallback: if bank empty, use any inline quiz pool
+  if (!pool.length && Array.isArray(n.quiz)) pool = n.quiz.slice();
+  return pool;
+}
+
 function renderQuiz(n){
   // init or resume session
-  const pool = n.quiz || [];
+  let pool = Array.isArray(n.quiz) && n.quiz.length ? n.quiz.slice() : selectFromBank(state.node, n);
   const { count, pass } = getQuizCfg(state.node, pool.length);
   if (!state.session || state.session.id !== state.node) {
     state.session = { id: state.node, left: count, ok: 0, asked: [] };
