@@ -128,14 +128,14 @@ function stepLabel(id){
 
 // Artwork mapping per node (optional)
 const ART = {
-  start: 'image/sky runes.jpg',
+  start: 'image/image/Generated Image September 06, 2025 - 5_17PM.jpeg',
   enemy1: 'image/stone-stair-snake_idle_v2.jpeg',
   enemy2: 'image/stone-block-golem_idle_v2.jpeg',
-  fork: 'image/sky runes.jpg',
+  fork: 'image/image/Generated Image September 06, 2025 - 5_17PM.jpeg',
   shrine: 'image/syujinkou.jpg',
   boss: 'image/stone-block-golem_idle_v2.jpeg',
-  good_end: 'image/sky runes.jpg',
-  bad_end: 'image/sky runes.jpg',
+  good_end: 'image/image/Generated Image September 06, 2025 - 5_17PM.jpeg',
+  bad_end: 'image/image/Generated Image September 06, 2025 - 5_17PM.jpeg',
 };
 
 // Short flavor lines for each scene
