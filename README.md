@@ -26,10 +26,14 @@ Usage tips
 Quiz sessions
 - Each quiz node now asks multiple questions per encounter.
 - Defaults: enemy=2 questions (need 2 correct), shrine=3 (need 2), boss=1 (need 1).
- - Boss is now 2 questions, need 1 correct (mini-boss感)。
+- Boss is now 2 questions, need 1 correct (mini-boss感)。
 - Progress shows like: `Q 1/2 • 正解 0/2 (合格: 2)`; pass/fail then routes via node.next.
 - Authoring: optional difficulty `d: 'E'|'M'|'H'` on each question renders a label.
- - Optional `exp` (explanation) shows briefly after answer, especially for誤答。
+- Optional `exp` (explanation) shows briefly after answer, especially for誤答。
+
+Randomization
+- Shuffles choice order on every question render.
+- Avoids repeating recently used questions across encounters (per node) via a small recent-history persisted in `localStorage`.
 
 Question bank
 - File: `questions/questions.js` — exposes global `QUESTIONS` (no fetch; works on file:// and Vercel)

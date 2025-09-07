@@ -156,6 +156,15 @@ const FLAVOR = {
   bad_end: '暗い気流が島を覆う――まだ終わらない。',
 };
 
+// Utility: Fisher-Yates shuffle (in place)
+function shuffle(arr){
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
 // Quiz session config per node (count = questions per session, pass = min correct)
 const QUIZ_CFG = {
   enemy1: { count: 2, pass: 2 },
@@ -168,6 +177,21 @@ function getQuizCfg(id, poolLen){
   const count = Math.max(1, Math.min(cfg.count, poolLen||1));
   const pass = Math.max(1, Math.min(cfg.pass, count));
   return { count, pass };
+}
+
+// Persisted recent-avoidance per node to reduce repetition across runs
+function getRecent(id){
+  try { return JSON.parse(localStorage.getItem('recent_'+id) || '[]'); } catch { return []; }
+}
+function pushRecent(id, asked, poolLen){
+  try {
+    const cap = Math.max(1, Math.min(poolLen-1, Math.ceil(poolLen/2)));
+    const prev = getRecent(id);
+    const merged = prev.concat(Array.isArray(asked)? asked : []);
+    const uniq = Array.from(new Set(merged));
+    const tail = uniq.slice(-cap);
+    localStorage.setItem('recent_'+id, JSON.stringify(tail));
+  } catch {}
 }
 
 function render(){
@@ -372,7 +396,9 @@ function renderQuiz(n){
   const sess = state.session;
 
   // pick a question not asked yet
-  const remain = pool.map((_,i)=>i).filter(i=>!sess.asked.includes(i));
+  const recent = getRecent(state.node);
+  let remain = pool.map((_,i)=>i).filter(i=>!sess.asked.includes(i) && !recent.includes(i));
+  if (!remain.length) remain = pool.map((_,i)=>i).filter(i=>!sess.asked.includes(i));
   const pickIndex = remain[Math.floor(Math.random()*remain.length)] ?? 0;
   const q = pool[pickIndex];
   sess.asked.push(pickIndex);
@@ -390,7 +416,8 @@ function renderQuiz(n){
     dialog.appendChild(badge);
   }
 
-  q.options.forEach(opt => {
+  const opts = shuffle((q.options||[]).slice());
+  opts.forEach(opt => {
     const b = document.createElement('button');
     b.textContent = opt;
     b.onclick = () => {
@@ -434,6 +461,8 @@ function renderQuiz(n){
       }
       const passed = (sess.ok >= pass);
       const nextNode = goBad ? 'bad_end' : (passed ? n.next.ok : n.next.ng);
+      // persist asked indices to avoid immediate repeats in next encounters
+      pushRecent(state.node, sess.asked, pool.length);
       state.session = null;
       setTimeout(()=>{ state.node = nextNode; save(); render(); }, delay);
     };
