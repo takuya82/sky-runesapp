@@ -302,5 +302,10 @@ window.addEventListener('DOMContentLoaded', () => {
     status.setAttribute('aria-live','polite');
     choices.setAttribute('role','group');
   } catch {}
+  // Optional: reset save via URL flag (?reset)
+  try {
+    const params = new URLSearchParams(window.location.search || '');
+    if (params.has('reset')) { clearSave(); state.hp = 5; state.node = 'title'; }
+  } catch {}
   render();
 });
