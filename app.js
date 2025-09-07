@@ -118,11 +118,17 @@ const STORY = {
     c2_enemy1: { title: "Wisp Pack", text: "語彙・時制の確認。", type: 'quiz', bank:{ use:['vocab_basic','grammar_tense'] }, next:{ ok:'c2_fork', ng:'c2_fork' } },
     c2_enemy2: { title: "Stone Imp", text: "基礎文法の確認。", type: 'quiz', bank:{ use:['grammar_basic'] }, next:{ ok:'c2_fork', ng:'c2_fork' } },
     c2_fork: { title: "Sea Gate", text: "潮の門。対岸へ渡るには試練を越えよ。", choices:[
-      { label: "試練へ", to: 'c2_shrine' },
+      { label: "試練へ", to: 'c2_shrine_intro' },
       { label: "霧の碑を調べる", to: 'c2_side' },
       { label: "灯台に立ち寄る", to: 'c2_meet_mage' },
       { label: "戻る", to: 'c2_start' }
     ] },
+    // Shrine intro (seq)
+    c2_shrine_intro: { title: "Before the Trial", type:'seq', steps:[
+      '潮の音が霧に吸い込まれていく。',
+      '門の前で、あなたは深呼吸をした。',
+      '（霧の護符があれば、少しだけ楽になるはずだ）',
+    ], next:'c2_shrine' },
     // Companion: Mage encounter with one-time shield
     c2_meet_mage: { title:'Lighthouse Mage', type:'seq', steps:[
       '朽ちた灯台に灯がともる。外套の人物があなたを見つめた。',
@@ -139,7 +145,12 @@ const STORY = {
     c2_side_charm: { title:'Mist Charm', text:'〈霧の護符〉を手に入れた。霧を裂く加護で、試練が少し楽になる。', actions:[{ set:{ flag:'mistCharm', value:true } }], choices:[
       { label:'門へ戻る', to:'c2_fork' }
     ] },
-    c2_shrine: { title: "Mist Trial", text: "接続詞と時制の応用。霧の護符があれば合格基準が少し下がる。", type:'quiz', bank:{ use:['connector_reason','grammar_tense'] }, next:{ ok:'c2_boss', ng:'c2_shrine' } },
+    c2_shrine: { title: "Mist Trial", text: "接続詞と時制の応用。霧の護符があれば合格基準が少し下がる。", type:'quiz', bank:{ use:['connector_reason','grammar_tense'] }, next:{ ok:'c2_boss_intro', ng:'c2_shrine' } },
+    // Boss intro (seq)
+    c2_boss_intro: { title:"Mist Guardian - Arrival", type:'seq', steps:[
+      '霧がほどけ、石像の目に蒼い光が灯る。',
+      '『問おう。風はどこから来て、どこへ還る？』',
+    ], next:'c2_boss' },
     c2_boss: { title: "Mist Guardian", text: "守護者の問い。", type:'quiz', bank:{ use:['exam_hard'] }, next:{ ok:'c2_good_end', ng:'c2_bad_end' } },
     c2_good_end: { title: "Chapter 2 Clear (Template)", text: "霧が晴れ、遠くに光の筋が見えた。第3章へ続く。", choices:[ { label:'タイトルへ', to:'title' } ] },
     c2_bad_end: { title: "Chapter 2 Failed (Template)", text: "霧に迷い込んだ…体勢を立て直そう。", choices:[ { label:'第2章タイトル', to:'c2_title' } ] },
@@ -251,6 +262,8 @@ const ART = {
   c2_side_charm: 'image/image/syujinkou.jpg',
   c2_meet_mage: 'image/image/humingbard.jpeg',
   c2_meet_mage_gift: 'image/image/humingbard.jpeg',
+  c2_shrine_intro: 'image/image/syujinkou.jpg',
+  c2_boss_intro: 'image/image/iwagolem.jpeg',
 };
 
 // Short flavor lines for each scene
@@ -436,7 +449,8 @@ function render(){
     let allies = [];
     try { if (hasFlag('allyFairy')) allies.push('妖精'); if (hasFlag('allyMage')) allies.push('魔導'); } catch {}
     const allyTxt = allies.length? ` <span class="badge">仲間:${allies.join('・')}</span>` : '';
-    status.innerHTML = `<span class="badge">HP:${state.hp}</span> <span class="hearts" aria-hidden="true">${hearts}</span>${allyTxt}`;
+    const shieldTxt = hasFlag('mageShield') ? ` <span class="badge">盾:1</span>` : '';
+    status.innerHTML = `<span class="badge">HP:${state.hp}</span> <span class="hearts" aria-hidden="true">${hearts}</span>${allyTxt}${shieldTxt}`;
   } catch {
     status.innerHTML = `<span class="badge">HP:${state.hp}</span>`;
   }
