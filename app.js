@@ -226,6 +226,14 @@ function clearSave(){
 function setFlag(k,v){ state.flags[k] = (v===undefined? true : v); save(); }
 function hasFlag(k){ return !!state.flags[k]; }
 
+// pause helper
+function pauseToTitle(){
+  try { save(); } catch {}
+  sound.play('nav');
+  state.node = 'title';
+  render();
+}
+
 // ---------------- Sound (WebAudio, tiny beeps) ----------------
 const sound = {
   enabled: (()=>{ try { return localStorage.getItem('se') !== '0'; } catch { return true; } })(),
@@ -545,6 +553,15 @@ function render(){
     choices.appendChild(b);
   });
 
+  // pause button (non-title nodes)
+  if (state.node !== 'title') {
+    const p = document.createElement('button');
+    p.className = 'btn';
+    p.textContent = '中断（タイトルへ）';
+    p.onclick = () => { pauseToTitle(); };
+    choices.appendChild(p);
+  }
+
   // title: show Continue if a save exists, and Clear
   if (state.node === 'title') {
     try {
@@ -728,6 +745,13 @@ function renderQuiz(n){
       choices.appendChild(hb);
     }
   } catch {}
+
+  // pause button inside quiz
+  const p = document.createElement('button');
+  p.className = 'btn';
+  p.textContent = '中断（タイトルへ）';
+  p.onclick = () => { pauseToTitle(); };
+  choices.appendChild(p);
 }
 
 // keyboard shortcuts for choices (1..9)
@@ -742,6 +766,8 @@ window.addEventListener('keydown', (e)=>{
   const k = (e.key||'').toLowerCase();
   // 'm' = mute/unmute
   if (k === 'm') { e.preventDefault(); sound.toggle(); sound.play('nav'); render(); return; }
+  // 'q' or 'Escape' = pause to title (save and go title)
+  if ((k === 'q') || (e.key === 'Escape')) { e.preventDefault(); pauseToTitle(); return; }
   // At title only: 'c' = continue if save exists
   if (k === 'c' && state.node === 'title') {
     try {

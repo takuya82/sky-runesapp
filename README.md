@@ -22,6 +22,7 @@ Usage tips
 - Feedback: Wrong answers briefly flash a red tint (damage cue).
 - Breadcrumbs: Hover each step to see a short description.
 - Choices: Selected answer briefly highlights green (OK) or red (NG).
+- Pause/Save: Game auto-saves HP/node on every step. Use the in-game "中断（タイトルへ）" button or press `q`/`Esc` to save-and-return; resume via "続きから" on the title.
 
 Quiz sessions
 - Each quiz node now asks multiple questions per encounter.
