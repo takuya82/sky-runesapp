@@ -20,6 +20,7 @@ const STORY = {
         { label: "物語の背景", to: "lore" },
         { label: "章の流れ", to: "map" },
         { label: "第2章（準備中）", to: "c2_title" },
+        { label: "第3章（準備中）", to: "c3_title" },
       ],
     },
     howto: {
@@ -154,6 +155,45 @@ const STORY = {
     c2_boss: { title: "Mist Guardian", text: "守護者の問い。", type:'quiz', bank:{ use:['exam_hard'] }, next:{ ok:'c2_good_end', ng:'c2_bad_end' } },
     c2_good_end: { title: "Chapter 2 Clear (Template)", text: "霧が晴れ、遠くに光の筋が見えた。第3章へ続く。", choices:[ { label:'タイトルへ', to:'title' } ] },
     c2_bad_end: { title: "Chapter 2 Failed (Template)", text: "霧に迷い込んだ…体勢を立て直そう。", choices:[ { label:'第2章タイトル', to:'c2_title' } ] },
+
+    // ---------- Chapter 3 (Skeleton) ----------
+    c3_title: {
+      title: "Sky Runes - Chapter 3",
+      html: [
+        '<div class="hero"><h1 class="logo-main">sky runes</h1><div class="logo-sub">（蔦の迷宮、南縁）</div></div>',
+        "南縁〈サウスリム〉。蔦と岩が絡み合う迷宮帯。",
+        "風の巡りは複雑で、ときに戻り、ときに絡む――",
+        "<hr>",
+        "第3章はひな型。道中→門→試練→小ボス→結末の流れは同じだが、守護は『蔦』の気配を帯びている。",
+      ].join('<br>'),
+      choices: [
+        { label: "第3章をはじめる", to: "c3_prologue" },
+        { label: "タイトルへ", to: "title" },
+      ],
+    },
+    c3_prologue: { title: "Vine Labyrinth - Prologue", type:'seq', steps:[
+      '南縁。大小の岩が浮かび、蔦が橋のように島を繋ぐ。',
+      'あなたは絡まる風の筋をほどきながら、迷宮帯へ踏み入れた。',
+    ], next: 'c3_start' },
+    c3_start: { title: "South Rim", text: "視界の端で、蔦が生きもののように揺れた。", choices:[
+      { label: '西の茂みへ', to:'c3_enemy1' }, { label:'南の裂け目へ', to:'c3_enemy2' }
+    ] },
+    c3_enemy1: { title: 'Sky Fish', text:'語彙・基礎文法。', type:'quiz', bank:{ use:['vocab_basic','grammar_basic'] }, next:{ ok:'c3_fork', ng:'c3_fork' } },
+    c3_enemy2: { title: 'Cobolt', text:'時制・接続。', type:'quiz', bank:{ use:['grammar_tense','connector_reason'] }, next:{ ok:'c3_fork', ng:'c3_fork' } },
+    c3_fork: { title:'Vine Gate', text:'蔦で編まれた門。向こう側に風の綾が見える。', choices:[
+      { label:'試練へ', to:'c3_shrine_intro' }, { label:'戻る', to:'c3_start' }
+    ] },
+    c3_shrine_intro: { title:'Before the Trial', type:'seq', steps:[
+      '蔦のざわめき。風は道を示すのか、それとも惑わすのか。',
+    ], next:'c3_shrine' },
+    c3_shrine: { title:'Vine Trial', text:'比較や関係の基礎を問う。', type:'quiz', bank:{ use:['exam_hard','grammar_tense'] }, next:{ ok:'c3_boss_intro', ng:'c3_shrine' } },
+    c3_boss_intro: { title:'Vine Warden - Arrival', type:'seq', steps:[
+      '門上の蔦が一斉にほどけ、形を成す。',
+      '『道は一つではない。では、今はどの道を選ぶ？』',
+    ], next:'c3_boss' },
+    c3_boss: { title:'Vine Warden', text:'守護の問い。', type:'quiz', bank:{ use:['exam_hard'] }, next:{ ok:'c3_good_end', ng:'c3_bad_end' } },
+    c3_good_end: { title:'Chapter 3 Clear (Template)', text:'蔦の迷いはほどけ、南縁に静かな風が戻った。', choices:[ { label:'タイトルへ', to:'title' } ] },
+    c3_bad_end: { title:'Chapter 3 Failed (Template)', text:'蔦のざわめきに呑まれた…もう一度挑もう。', choices:[ { label:'第3章タイトル', to:'c3_title' } ] },
   }
 };
 
@@ -210,7 +250,7 @@ const sound = {
   toggle(){ this.enabled = !this.enabled; try { localStorage.setItem('se', this.enabled? '1':'0'); } catch {} }
 };
 
-function normId(id){ return (id||'').replace(/^c2_/, ''); }
+function normId(id){ return (id||'').replace(/^c\d+_/, ''); }
 function stepIndex(id){
   const x = normId(id);
   if (x==='start' || x==='enemy1' || x==='enemy2') return 0; // 道中扱い
@@ -264,6 +304,19 @@ const ART = {
   c2_meet_mage_gift: 'image/image/humingbard.jpeg',
   c2_shrine_intro: 'image/image/syujinkou.jpg',
   c2_boss_intro: 'image/image/iwagolem.jpeg',
+  // Chapter 3
+  c3_title: 'image/image/Generated-Image-September-06,-2025---5_17PM.jpeg',
+  c3_prologue: 'image/image/Generated-Image-September-06,-2025---5_17PM.jpeg',
+  c3_start: 'image/image/Generated-Image-September-06,-2025---5_38PM.jpeg',
+  c3_enemy1: 'image/image/skyfish.jpeg',
+  c3_enemy2: 'image/image/cobolt.jpeg',
+  c3_fork: 'image/image/Generated-Image-September-06,-2025---5_39PM.jpeg',
+  c3_shrine_intro: 'image/image/syujinkou.jpg',
+  c3_shrine: 'image/image/syujinkou.jpg',
+  c3_boss_intro: 'image/image/tsuta.jpeg',
+  c3_boss: 'image/image/tsuta.jpeg',
+  c3_good_end: 'image/image/Generated-Image-September-06,-2025---5_17PM.jpeg',
+  c3_bad_end: 'image/image/Generated-Image-September-06,-2025---5_17PM.jpeg',
 };
 
 // Short flavor lines for each scene
@@ -299,6 +352,11 @@ const QUIZ_CFG = {
   c2_enemy2: { count: 2, pass: 2 },
   c2_shrine: { count: 3, pass: 2 },
   c2_boss:   { count: 2, pass: 1 },
+  // Chapter 3
+  c3_enemy1: { count: 2, pass: 2 },
+  c3_enemy2: { count: 2, pass: 2 },
+  c3_shrine: { count: 3, pass: 2 },
+  c3_boss:   { count: 2, pass: 1 },
 };
 function getQuizCfg(id, poolLen){
   const cfg = QUIZ_CFG[id] || { count: 1, pass: 1 };
