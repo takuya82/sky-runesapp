@@ -52,7 +52,16 @@ const STORY = {
 
     // Main path (single-question nodes)
     start: { title: "Skyfield", text: "浮島の祠へ向かう。道中に敵がいる。", choices: [
-      { label: "北の道へ", to: "enemy1" }, { label: "東の谷へ", to: "enemy2" }
+      { label: "北の道へ", to: "enemy1" }, { label: "東の谷へ", to: "enemy2" },
+      { label: "風の囁きを聞く", to: "meet_fairy" }
+    ] },
+    // Companion: Fairy encounter
+    meet_fairy: { title: "Wind Fairy", type:'seq', steps:[
+      'かすかな鈴の音。小さな妖精が風の縁に現れた。',
+      '『旅の人、言葉の迷いがあれば、そっと手を貸すよ』',
+    ], next:'meet_fairy_join' },
+    meet_fairy_join: { title:'Fairy Joins', text:'〈風の妖精〉が同行した。困ったとき、選択肢を少し絞ってくれる。', actions:[{ set:{ flag:'allyFairy', value:true } }], choices:[
+      { label:'道へ戻る', to:'start' }
     ] },
     enemy1: { title: "Slime A", text: "英単語・時制クイズ！正解で前進、ミスでHP-1。", type: "quiz",
       bank: { use: ['vocab_basic','grammar_tense'] },
@@ -111,7 +120,16 @@ const STORY = {
     c2_fork: { title: "Sea Gate", text: "潮の門。対岸へ渡るには試練を越えよ。", choices:[
       { label: "試練へ", to: 'c2_shrine' },
       { label: "霧の碑を調べる", to: 'c2_side' },
+      { label: "灯台に立ち寄る", to: 'c2_meet_mage' },
       { label: "戻る", to: 'c2_start' }
+    ] },
+    // Companion: Mage encounter with one-time shield
+    c2_meet_mage: { title:'Lighthouse Mage', type:'seq', steps:[
+      '朽ちた灯台に灯がともる。外套の人物があなたを見つめた。',
+      '『風の巡りを正す旅か。ならば一時の護りを授けよう』',
+    ], next:'c2_meet_mage_gift' },
+    c2_meet_mage_gift: { title:'Mage’s Ward', text:'〈灯台の魔導〉が同行した。次に受けるはずのダメージを一度だけ無効化する。', actions:[{ set:{ flag:'allyMage', value:true } }, { set:{ flag:'mageShield', value:true } }], choices:[
+      { label:'門へ戻る', to:'c2_fork' }
     ] },
     // Side event: obtain Mist Charm that eases the shrine trial
     c2_side: { title: 'Fog Shrine', type:'seq', steps:[
@@ -154,7 +172,7 @@ function clearSave(){
 }
 
 // flags helpers
-function setFlag(k,v=true){ state.flags[k]=!!v; save(); }
+function setFlag(k,v){ state.flags[k] = (v===undefined? true : v); save(); }
 function hasFlag(k){ return !!state.flags[k]; }
 
 // ---------------- Sound (WebAudio, tiny beeps) ----------------
@@ -211,6 +229,8 @@ const ART = {
   fork: 'image/image/tsuta.jpeg',             // ivy/gate atmosphere
   ruins: 'image/image/tsuta.jpeg',
   ruins_key: 'image/image/syujinkou.jpg',
+  meet_fairy: 'image/image/wisp.jpeg',
+  meet_fairy_join: 'image/image/wisp.jpeg',
   shrine: 'image/image/syujinkou.jpg',        // protagonist at shrine
   boss: 'image/image/iwagolem.jpeg',          // stone golem boss
   // Endings
@@ -229,6 +249,8 @@ const ART = {
   c2_prologue: 'image/image/Generated-Image-September-06,-2025---5_17PM.jpeg',
   c2_side: 'image/image/tsuta.jpeg',
   c2_side_charm: 'image/image/syujinkou.jpg',
+  c2_meet_mage: 'image/image/humingbard.jpeg',
+  c2_meet_mage_gift: 'image/image/humingbard.jpeg',
 };
 
 // Short flavor lines for each scene
@@ -411,7 +433,10 @@ function render(){
     const maxHp = 5;
     const hp = Math.max(0, Math.min(maxHp, Number(state.hp)||0));
     const hearts = '♥'.repeat(hp) + '♡'.repeat(Math.max(0, maxHp - hp));
-    status.innerHTML = `<span class="badge">HP:${state.hp}</span> <span class="hearts" aria-hidden="true">${hearts}</span>`;
+    let allies = [];
+    try { if (hasFlag('allyFairy')) allies.push('妖精'); if (hasFlag('allyMage')) allies.push('魔導'); } catch {}
+    const allyTxt = allies.length? ` <span class="badge">仲間:${allies.join('・')}</span>` : '';
+    status.innerHTML = `<span class="badge">HP:${state.hp}</span> <span class="hearts" aria-hidden="true">${hearts}</span>${allyTxt}`;
   } catch {
     status.innerHTML = `<span class="badge">HP:${state.hp}</span>`;
   }
@@ -563,7 +588,9 @@ function renderQuiz(n){
     b.onclick = () => {
       const ok = (opt === q.a);
       if (ok) sess.ok += 1; else {
-        state.hp -= 1;
+        // Mage shield prevents damage once
+        if (hasFlag('mageShield')) { setFlag('mageShield', false); }
+        else { state.hp -= 1; }
         try {
           document.body.classList.remove('hurt');
           void document.body.offsetWidth; // restart animation
@@ -613,6 +640,22 @@ function renderQuiz(n){
   hint.className = 'muted';
   hint.textContent = '数字キー 1-4 で選択';
   choices.appendChild(hint);
+
+  // Fairy ally: one-click hint to eliminate two wrong options
+  try {
+    if (hasFlag('allyFairy')) {
+      const hb = document.createElement('button');
+      hb.className = 'btn';
+      hb.textContent = '妖精にヒントを聞く';
+      hb.onclick = () => {
+        hb.disabled = true;
+        const btns = Array.from(choices.querySelectorAll('button'));
+        const wrong = btns.filter(b=>b.textContent!==q.a);
+        shuffle(wrong).slice(0, Math.max(0, wrong.length - 2)).forEach(b=> b.remove());
+      };
+      choices.appendChild(hb);
+    }
+  } catch {}
 }
 
 // keyboard shortcuts for choices (1..9)
