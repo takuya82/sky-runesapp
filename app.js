@@ -288,8 +288,8 @@ const ART = {
   fork: 'image/image/Generated-Image-September-06,-2025---5_39PM.jpeg',
   ruins: 'image/image/tsuta.jpeg',
   ruins_key: 'image/image/syujinkou.jpg',
-  meet_fairy: 'image/image/wisp.jpeg',
-  meet_fairy_join: 'image/image/wisp.jpeg',
+  meet_fairy: 'image/image/party/Generated-Image-September-06,-2025---5_50PM.jpeg',
+  meet_fairy_join: 'image/image/party/Generated-Image-September-06,-2025---5_50PM.jpeg',
   shrine: 'image/image/syujinkou.jpg',        // protagonist at shrine
   boss: 'image/image/stone-stair-snake_idle_v2.jpeg',          // boss (snake)
   // Endings
@@ -491,6 +491,24 @@ function render(){
       };
       ctrl.appendChild(btn);
       fig.appendChild(ctrl);
+      scene.appendChild(fig);
+    }
+  } else {
+    // generic artwork for non-flow scenes if defined
+    const artSrc = ART[state.node] || null;
+    const old = scene.querySelector('.illust');
+    if (old) old.remove();
+    if (artSrc) {
+      const fig = document.createElement('figure');
+      fig.className = 'illust';
+      const img = document.createElement('img');
+      img.id = 'artimg';
+      img.alt = n?.title || 'Scene';
+      try { img.loading = 'lazy'; img.decoding = 'async'; } catch {}
+      img.src = artSrc;
+      // apply saved fit preference
+      try { if ((localStorage.getItem('artfit')||'contain') === 'cover') img.classList.add('cover'); } catch {}
+      fig.appendChild(img);
       scene.appendChild(fig);
     }
   }
