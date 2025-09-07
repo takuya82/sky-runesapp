@@ -170,6 +170,7 @@ function render(){
       const img = document.createElement('img');
       img.id = 'artimg';
       img.alt = stepLabel(state.node);
+      try { img.loading = 'lazy'; img.decoding = 'async'; } catch {}
       img.src = artSrc;
       fig.appendChild(img);
       scene.appendChild(fig);
@@ -287,10 +288,27 @@ function renderQuiz(n){
 
 // keyboard shortcuts for choices (1..9)
 window.addEventListener('keydown', (e)=>{
-  if (!/^[1-9]$/.test(e.key)) return;
-  const idx = Number(e.key) - 1;
-  const btns = Array.from(choices.querySelectorAll('button'));
-  if (btns[idx]) { e.preventDefault(); btns[idx].click(); }
+  // Number keys: select choices 1..9
+  if (/^[1-9]$/.test(e.key)) {
+    const idx = Number(e.key) - 1;
+    const btns = Array.from(choices.querySelectorAll('button'));
+    if (btns[idx]) { e.preventDefault(); btns[idx].click(); }
+    return;
+  }
+  const k = (e.key||'').toLowerCase();
+  // 'm' = mute/unmute
+  if (k === 'm') { e.preventDefault(); sound.toggle(); sound.play('nav'); render(); return; }
+  // At title only: 'c' = continue if save exists
+  if (k === 'c' && state.node === 'title') {
+    try {
+      const sn = localStorage.getItem('node');
+      const sh = Number(localStorage.getItem('hp')) || 0;
+      if (sn && sn !== 'title') { e.preventDefault(); sound.play('nav'); state.node = sn; state.hp = sh || state.hp; save(); render(); }
+    } catch {}
+    return;
+  }
+  // At title only: 'r' = clear save
+  if (k === 'r' && state.node === 'title') { e.preventDefault(); clearSave(); state.hp = 5; state.node = 'title'; render(); return; }
 });
 
 window.addEventListener('DOMContentLoaded', () => {
