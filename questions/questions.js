@@ -27,6 +27,13 @@ window.QUESTIONS = {
       { q:"although の意味は？", options:["〜だけれども","〜にもかかわらず","それゆえ","ところが"], a:"〜だけれども", d:'M' },
       { q:"therefore の意味は？", options:["それゆえ","それにもかかわらず","なぜなら","しかし"], a:"それゆえ", d:'M' },
     ],
+    exam_hard: [
+      { q:"比較級: She is ( ) than me.", options:["taller","tallest","as tall","more tall"], a:"taller", d:'M', exp:"比較級は tall → taller。more tall は不可。" },
+      { q:"受動態: The window ( ) by Ken.", options:["was opened","opened","was open","is opening"], a:"was opened", d:'M', exp:"be + 過去分詞 → was opened。" },
+      { q:"関係代名詞: This is the book ( ) I bought.", options:["which","who","whom","where"], a:"which", d:'H', exp:"先行詞book（物）→ which。省略可だが which が基本。" },
+      { q:"不定詞: I went to the library ( ) study.", options:["to","for","in order","that"], a:"to", d:'M', exp:"目的の不定詞 to + 動詞の原形（to study）。" },
+      { q:"完了: I have ( ) the homework already.", options:["finished","finish","finishing","to finish"], a:"finished", d:'M', exp:"have + 過去分詞 → have finished。" },
+      { q:"前置詞: He is good ( ) math.", options:["at","in","for","with"], a:"at", d:'E', exp:"good at ~（～が得意）。" },
+    ],
   }
 };
-

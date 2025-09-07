@@ -65,8 +65,8 @@ const STORY = {
     shrine: { title: "Shrine Puzzle", text: "正解で通過。失敗するとHP-1で再挑戦。", type: "quiz",
       bank: { use: ['connector_reason','grammar_basic','grammar_tense'] },
       next: { ok:"boss", ng:"shrine" } },
-    boss: { title: "Mini Boss", text: "最後の一問！", type: "quiz",
-      quiz: [ { q:"「彼は昨日ここに来た」を英訳せよ。", options:["He came here yesterday.","He comes here yesterday.","He is here yesterday.","He was come here yesterday."], a:"He came here yesterday." } ],
+    boss: { title: "Mini Boss", text: "最後の勝負。正解で突破、ミスでHP-1。", type: "quiz",
+      bank: { use: ['exam_hard'] },
       next: { ok:"good_end", ng:"bad_end" } },
     good_end: { title: "Clear!", text: "勇気の欠片が光り、風が安定した。祠は静けさを取り戻す。次章で残る欠片を探そう。" },
     bad_end: { title: "Game Over", text: "力尽きた… 島の風はまだ不安定だ。準備を整えて、もう一度挑戦しよう。" },
@@ -161,7 +161,7 @@ const QUIZ_CFG = {
   enemy1: { count: 2, pass: 2 },
   enemy2: { count: 2, pass: 2 },
   shrine: { count: 3, pass: 2 },
-  boss:   { count: 1, pass: 1 },
+  boss:   { count: 2, pass: 1 }, // little mini-boss: 2問中1正解で突破
 };
 function getQuizCfg(id, poolLen){
   const cfg = QUIZ_CFG[id] || { count: 1, pass: 1 };
@@ -412,17 +412,30 @@ function renderQuiz(n){
         b.classList.add(ok ? 'choice-ok' : 'choice-ng');
       } catch {}
 
+      // show brief explanation on wrong answer (or when provided)
+      try {
+        if (!ok || q.exp) {
+          const info = document.createElement('div');
+          info.className = 'muted';
+          const correct = `正解: ${q.a}`;
+          const extra = q.exp ? `　解説: ${q.exp}` : '';
+          info.textContent = (!ok ? `${correct}${extra}` : extra);
+          choices.appendChild(info);
+        }
+      } catch {}
+
       // advance session or finish
       sess.left -= 1;
       const goBad = (state.hp <= 0);
+      const delay = ok ? 220 : (q.exp ? 1100 : 420);
       if (!goBad && sess.left > 0) {
-        setTimeout(()=>{ render(); }, ok ? 180 : 320);
+        setTimeout(()=>{ render(); }, delay);
         return;
       }
       const passed = (sess.ok >= pass);
       const nextNode = goBad ? 'bad_end' : (passed ? n.next.ok : n.next.ng);
       state.session = null;
-      setTimeout(()=>{ state.node = nextNode; save(); render(); }, ok ? 180 : 320);
+      setTimeout(()=>{ state.node = nextNode; save(); render(); }, delay);
     };
     choices.appendChild(b);
   });
