@@ -94,19 +94,34 @@ const STORY = {
         "第2章はひな型。道中→門→試練→小ボス→結末の流れは同じだが、難度が少し上がる。",
       ].join('<br>'),
       choices: [
-        { label: "第2章をはじめる", to: "c2_start" },
+        { label: "第2章をはじめる", to: "c2_prologue" },
         { label: "タイトルへ", to: "title" },
       ],
     },
+    // Chapter 2 prologue (seq)
+    c2_prologue: { title: "Mist Coast - Prologue", type:'seq', steps:[
+      '浮島帯〈ミストコースト〉。薄い霧が風に巻かれて、空の道を流れていく。',
+      'あなたは風の痕跡を追い、対岸の門へ向かう――',
+    ], next: 'c2_start' },
     c2_start: { title: "Mist Coast", text: "霧のかかる浮島帯。まずは偵察だ。", choices: [
       { label: "東へ進む", to: "c2_enemy1" }, { label: "南の断崖へ", to: "c2_enemy2" }
     ] },
     c2_enemy1: { title: "Wisp Pack", text: "語彙・時制の確認。", type: 'quiz', bank:{ use:['vocab_basic','grammar_tense'] }, next:{ ok:'c2_fork', ng:'c2_fork' } },
     c2_enemy2: { title: "Stone Imp", text: "基礎文法の確認。", type: 'quiz', bank:{ use:['grammar_basic'] }, next:{ ok:'c2_fork', ng:'c2_fork' } },
     c2_fork: { title: "Sea Gate", text: "潮の門。対岸へ渡るには試練を越えよ。", choices:[
-      { label: "試練へ", to: 'c2_shrine' }, { label: "戻る", to: 'c2_start' }
+      { label: "試練へ", to: 'c2_shrine' },
+      { label: "霧の碑を調べる", to: 'c2_side' },
+      { label: "戻る", to: 'c2_start' }
     ] },
-    c2_shrine: { title: "Mist Trial", text: "接続詞と時制の応用。", type:'quiz', bank:{ use:['connector_reason','grammar_tense'] }, next:{ ok:'c2_boss', ng:'c2_shrine' } },
+    // Side event: obtain Mist Charm that eases the shrine trial
+    c2_side: { title: 'Fog Shrine', type:'seq', steps:[
+      '門の足元に、霧の碑が埋もれている。',
+      '微かな符が浮かび、風が円を描いた。',
+    ], next:'c2_side_charm' },
+    c2_side_charm: { title:'Mist Charm', text:'〈霧の護符〉を手に入れた。霧を裂く加護で、試練が少し楽になる。', actions:[{ set:{ flag:'mistCharm', value:true } }], choices:[
+      { label:'門へ戻る', to:'c2_fork' }
+    ] },
+    c2_shrine: { title: "Mist Trial", text: "接続詞と時制の応用。霧の護符があれば合格基準が少し下がる。", type:'quiz', bank:{ use:['connector_reason','grammar_tense'] }, next:{ ok:'c2_boss', ng:'c2_shrine' } },
     c2_boss: { title: "Mist Guardian", text: "守護者の問い。", type:'quiz', bank:{ use:['exam_hard'] }, next:{ ok:'c2_good_end', ng:'c2_bad_end' } },
     c2_good_end: { title: "Chapter 2 Clear (Template)", text: "霧が晴れ、遠くに光の筋が見えた。第3章へ続く。", choices:[ { label:'タイトルへ', to:'title' } ] },
     c2_bad_end: { title: "Chapter 2 Failed (Template)", text: "霧に迷い込んだ…体勢を立て直そう。", choices:[ { label:'第2章タイトル', to:'c2_title' } ] },
@@ -211,6 +226,9 @@ const ART = {
   c2_boss: 'image/image/iwagolem.jpeg',
   c2_good_end: 'image/image/Generated-Image-September-06,-2025---5_17PM.jpeg',
   c2_bad_end: 'image/image/Generated-Image-September-06,-2025---5_17PM.jpeg',
+  c2_prologue: 'image/image/Generated-Image-September-06,-2025---5_17PM.jpeg',
+  c2_side: 'image/image/tsuta.jpeg',
+  c2_side_charm: 'image/image/syujinkou.jpg',
 };
 
 // Short flavor lines for each scene
@@ -236,15 +254,23 @@ function shuffle(arr){
 
 // Quiz session config per node (count = questions per session, pass = min correct)
 const QUIZ_CFG = {
+  // Chapter 1
   enemy1: { count: 2, pass: 2 },
   enemy2: { count: 2, pass: 2 },
   shrine: { count: 3, pass: 2 },
   boss:   { count: 2, pass: 1 }, // little mini-boss: 2問中1正解で突破
+  // Chapter 2
+  c2_enemy1: { count: 2, pass: 2 },
+  c2_enemy2: { count: 2, pass: 2 },
+  c2_shrine: { count: 3, pass: 2 },
+  c2_boss:   { count: 2, pass: 1 },
 };
 function getQuizCfg(id, poolLen){
   const cfg = QUIZ_CFG[id] || { count: 1, pass: 1 };
   const count = Math.max(1, Math.min(cfg.count, poolLen||1));
-  const pass = Math.max(1, Math.min(cfg.pass, count));
+  let pass = Math.max(1, Math.min(cfg.pass, count));
+  // Example: if player obtained the Mist Charm, ease the c2_shrine requirement by 1
+  if (id === 'c2_shrine' && hasFlag('mistCharm')) pass = Math.max(1, pass - 1);
   return { count, pass };
 }
 
@@ -371,6 +397,15 @@ function render(){
   // body
   if (n && n.type === 'seq') return renderSeq(n);
   if (n && n.html) dialog.innerHTML = n.html; else dialog.textContent = n?.text || '';
+  // small context notes for certain flags
+  try {
+    if (state.node === 'c2_shrine' && hasFlag('mistCharm')) {
+      const note = document.createElement('div');
+      note.className = 'muted';
+      note.textContent = '霧の護符の加護を受けている（合格基準が緩和）。';
+      dialog.appendChild(note);
+    }
+  } catch {}
   // status (numeric + hearts up to 5)
   try {
     const maxHp = 5;
